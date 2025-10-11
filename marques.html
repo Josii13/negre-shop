@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marque - Frederic N'DA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #FFFFFF;
+            color: #000000;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #000000;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 400;
+            transition: opacity 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background-color: #000000;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Page Banner */
+        .page-banner {
+            margin-top: 80px;
+            padding: 5rem 2rem 3rem;
+            background: linear-gradient(135deg, #FAFAFA 0%, #FFFFFF 100%);
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .banner-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .banner-content h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+        }
+
+        .banner-content p {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: #555;
+            font-weight: 300;
+        }
+
+        .brand-description {
+            max-width: 800px;
+            margin: 3rem auto 0;
+            text-align: left;
+            font-style: italic;
+            color: #666;
+            border-left: 3px solid #000;
+            padding-left: 2rem;
+        }
+
+        /* Products Section */
+        .products-section {
+            padding: 4rem 2rem;
+        }
+
+        .products-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background-color: #FFFFFF;
+            transition: all 0.3s ease;
+            border: 1px solid #F0F0F0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 280px;
+            background-color: #F7F7F7;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .view-eye {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-card:hover .view-eye {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .view-eye:hover {
+            background-color: #000000;
+        }
+
+        .view-eye svg {
+            width: 24px;
+            height: 24px;
+            stroke: #000000;
+            transition: stroke 0.3s ease;
+        }
+
+        .view-eye:hover svg {
+            stroke: #FFFFFF;
+        }
+
+        .product-info {
+            padding: 1.25rem;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .product-info h3 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #000000;
+        }
+
+        .product-btn {
+            width: 100%;
+            padding: 0.85rem;
+            background-color: #000000;
+            color: #FFFFFF;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.02em;
+            border-radius: 2px;
+        }
+
+        .product-btn:hover {
+            background-color: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .whatsapp-btn {
+            background-color: #25D366;
+        }
+
+        .whatsapp-btn:hover {
+            background-color: #128C7E;
+        }
+
+        /* Modal de détails */
+        .detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .detail-modal.active {
+            display: flex;
+        }
+
+        .detail-modal-content {
+            background-color: #FFFFFF;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.4s ease;
+            border-radius: 4px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .detail-image-container {
+            background-color: #F7F7F7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .detail-image-container img {
+            max-width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+        }
+
+        .detail-info-container {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .detail-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #000;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .detail-close:hover {
+            background: #000000;
+            color: #FFFFFF;
+            transform: rotate(90deg);
+        }
+
+        .detail-title {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .detail-price {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #000000;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-description {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: #FAFAFA;
+            border-left: 3px solid #000000;
+            border-radius: 2px;
+        }
+
+        .detail-description p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #333;
+        }
+
+        .detail-characteristics {
+            margin-bottom: 2rem;
+        }
+
+        .detail-characteristics h4 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .characteristic-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .characteristic-label {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .characteristic-value {
+            font-weight: 400;
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 6rem;
+            padding: 3rem 2rem;
+            background-color: #FAFAFA;
+            text-align: center;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        footer p {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 300;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background-color: #FFFFFF;
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                display: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .banner-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .brand-description {
+                padding-left: 1rem;
+                margin-top: 2rem;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-modal-content {
+                grid-template-columns: 1fr;
+                max-height: 85vh;
+            }
+
+            .detail-info-container {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-content">
+            
+            <div class="logo">FREDERIC N'DA</div>
+            <button class="mobile-menu-btn" id="menuBtn">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="peinture.html">Peinture</a></li>
+                <li><a href="design.html">Design</a></li>
+                <li><a href="marques.html">Marque</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Banner -->
+    <section class="page-banner">
+        <div class="banner-content">
+            <h1>Marque</h1>
+            <p>Streetwear réinventé - où le minimalisme rencontre l'élégance pour créer une expression universelle de la contemporanéité.</p>
+            <div class="brand-description">
+                <p>"Le minimalisme, l'élégance et la raffinerie deviennent ici les vecteurs d'un streetwear réinventé. Mon intention est de transcender son image première pour l'introduire, avec mesure et subtilité, dans tous les espaces sociaux. Le streetwear cesse alors d'être un code marginal pour devenir une expression universelle de la contemporanéité."</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="products-section">
+        <div class="products-grid" id="productsGrid">
+            <!-- Les produits seront générés par JavaScript -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 Frederic N'DA. Tous droits réservés.</p>
+    </footer>
+
+    <!-- Modal de détails -->
+    <div id="detailModal" class="detail-modal">
+        <div class="detail-modal-content">
+            <button class="detail-close" onclick="closeDetailModal()">✕</button>
+            <div class="detail-image-container">
+                <img id="detailImage" src="" alt="">
+            </div>
+            <div class="detail-info-container">
+                <div>
+                    <h2 class="detail-title" id="detailTitle"></h2>
+                    <div class="detail-price" id="detailPrice"></div>
+                    <div class="detail-description">
+                        <p id="detailDescription"></p>
+                    </div>
+                    <div class="detail-characteristics">
+                        <h4>Caractéristiques</h4>
+                        <div class="characteristic-item">
+                            <span class="characteristic-label">Matière</span>
+                            <span class="characteristic-value" id="detailMaterial"></span>
+                        </div>
+                        <div class="characteristic-item">
+                            <span class="characteristic-label">Tailles disponibles</span>
+                            <span class="characteristic-value" id="detailSizes"></span>
+                        </div>
+                        <div class="characteristic-item">
+                            <span class="characteristic-label">Style</span>
+                            <span class="characteristic-value" id="detailStyle"></span>
+                        </div>
+                        <div class="characteristic-item">
+                            <span class="characteristic-label">Collection</span>
+                            <span class="characteristic-value" id="detailCollection"></span>
+                        </div>
+                    </div>
+                </div>
+                <button class="product-btn whatsapp-btn" onclick="orderFromDetail()">Commander sur WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données des produits de la marque
+        const products = [
+            {
+                name: "T-shirt Signature",
+                price: "45 000 FCFA",
+                image: "img1.jpg",
+                description: "T-shirt premium au coupe minimaliste, réalisé dans un coton bio de haute qualité. Le logo discret incarne l'essence de la marque : raffinement et simplicité.",
+                material: "Coton bio 100% - 240 g/m²",
+                sizes: "XS, S, M, L, XL",
+                style: "Minimaliste - Streetwear élégant",
+                collection: "Signature 2024"
+            },
+            {
+                name: "Pull Oversized",
+                price: "85 000 FCFA",
+                image: "img1.jpg",
+                description: "Pull oversized au design épuré, alliant confort et élégance. La coupe contemporaine et les finitions soignées en font une pièce intemporelle.",
+                material: "Laine mérinos et coton",
+                sizes: "S, M, L, XL",
+                style: "Oversized - Contemporain",
+                collection: "Signature 2024"
+            },
+            {
+                name: "Pantalon Technique",
+                price: "75 000 FCFA",
+                image: "img1.jpg",
+                description: "Pantalon fusionnant l'esthétique streetwear et le savoir-faire technique. Coupe moderne et tissu technique pour une élégance urbaine.",
+                material: "Twill technique waterproof",
+                sizes: "30, 32, 34, 36, 38",
+                style: "Urbain technique",
+                collection: "Urbanité 2024"
+            },
+            {
+                name: "Jacket Architecturale",
+                price: "120 000 FCFA",
+                image: "img1.jpg",
+                description: "Veste au design architectural, où chaque ligne a son importance. Structure épurée et détails fonctionnels pour une pièce signature.",
+                material: "Coton ciré et laine",
+                sizes: "S, M, L, XL",
+                style: "Architectural - Minimaliste",
+                collection: "Architecture 2024"
+            },
+            {
+                name: "Casquette Structurée",
+                price: "35 000 FCFA",
+                image: "img1.jpg",
+                description: "Casquette au design repensé, alliant courbes organiques et structure rigoureuse. Accessoire signature qui complète toute tenue.",
+                material: "Laine et cuir végétalien",
+                sizes: "Adjustable (OS)",
+                style: "Contemporain - Essentiel",
+                collection: "Accessoires 2024"
+            },
+            {
+                name: "Chaussettes Signature",
+                price: "15 000 FCFA",
+                image: "img1.jpg",
+                description: "Pack de 3 paires de chaussettes en coton premium. Design minimaliste avec le logo discret, pour un détail qui fait la différence.",
+                material: "Coton peigné 100%",
+                sizes: "39-42, 43-46",
+                style: "Essentiel - Raffiné",
+                collection: "Essentiels 2024"
+            }
+        ];
+
+        let currentProduct = null;
+
+        // Générer les cartes de produits
+        function generateProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = products.map((product, index) => `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.name}">
+                        <div class="view-eye" onclick="openDetailModal(${index})">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-header">
+                            <h3>${product.name}</h3>
+                            <span class="product-price"></span>
+                        </div>
+                        <button class="product-btn whatsapp-btn" onclick="orderOnWhatsApp(${index})">Commander sur WhatsApp</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Ouvrir le modal de détails
+        function openDetailModal(index) {
+            currentProduct = products[index];
+            document.getElementById('detailImage').src = currentProduct.image;
+            document.getElementById('detailTitle').textContent = currentProduct.name;
+            document.getElementById('detailPrice').textContent = currentProduct.price;
+            document.getElementById('detailDescription').textContent = currentProduct.description;
+            document.getElementById('detailMaterial').textContent = currentProduct.material;
+            document.getElementById('detailSizes').textContent = currentProduct.sizes;
+            document.getElementById('detailStyle').textContent = currentProduct.style;
+            document.getElementById('detailCollection').textContent = currentProduct.collection;
+            document.getElementById('detailModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Fermer le modal de détails
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Commander depuis le modal de détails
+        function orderFromDetail() {
+            closeDetailModal();
+            orderOnWhatsAppWithProduct(currentProduct);
+        }
+
+        // Ouvrir WhatsApp avec le message prédéfini
+        function orderOnWhatsApp(index) {
+            const product = products[index];
+            orderOnWhatsAppWithProduct(product);
+        }
+
+        function orderOnWhatsAppWithProduct(product) {
+            const phoneNumber = "2250768298965"; // Remplacez par le numéro réel
+            const message = `Bonjour, je souhaite commander le produit suivant :\n\n*${product.name}*\nPrix : ${product.price}\n\nMerci de me recontacter pour finaliser la commande.`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Menu mobile
+        document.getElementById('menuBtn').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+
+        // Fermer le modal en cliquant à l'extérieur
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDetailModal();
+            }
+        });
+
+        // Initialiser les produits au chargement
+        generateProducts();
+    </script>
+</body>
+</html>
