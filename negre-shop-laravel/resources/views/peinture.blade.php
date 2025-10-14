@@ -472,7 +472,7 @@
         <div class="order-modal-content">
             <button class="detail-close" onclick="closeOrderModal()">✕</button>
             <h2>Commander</h2>
-            <form action="{{ route('order.store') }}" method="POST">
+            <form id="orderForm" action="{{ route('order.store') }}" method="POST">
                 @csrf
                 <input type="hidden" id="product_id" name="product_id">
                 <div class="form-group">
@@ -491,7 +491,7 @@
                     <label for="message">Message</label>
                     <textarea id="message" name="message" readonly></textarea>
                 </div>
-                <button type="submit" class="submit-btn">Envoyer</button>
+                <button type="submit" class="submit-btn" id="submitBtn">Envoyer</button>
             </form>
         </div>
     </div>
@@ -580,6 +580,37 @@ document.addEventListener('DOMContentLoaded', function() {
             orderModal.classList.remove('active');
             document.body.style.overflow = 'auto';
         }
+    }
+
+    // Gestion de la soumission du formulaire avec le système global
+    const orderForm = document.getElementById('orderForm');
+    if (orderForm) {
+        orderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Fonction pour préparer les données email
+            const prepareEmailData = (formData, serverData) => ({
+                to_email: formData.get('customer_email'),
+                to_name: formData.get('customer_name'),
+                product_name: serverData.product_name,
+                product_price: serverData.product_price,
+                customer_phone: formData.get('customer_phone'),
+                message: formData.get('message')
+            });
+
+            // Utiliser le gestionnaire global
+            handleFormSubmit(orderForm, prepareEmailData, {
+                showSuccessModal: true,
+                sendEmail: true,
+                reloadOnSuccess: true,
+                reloadDelay: 3000,
+                successMessage: 'Votre commande a été prise en compte avec succès.',
+                successSubMessage: 'Un email de confirmation vous sera envoyé sous peu.'
+            }).then(() => {
+                // Fermer la modale de commande après succès
+                closeOrderModal();
+            });
+        });
     }
 
     // Fermer les modals en cliquant à l'extérieur

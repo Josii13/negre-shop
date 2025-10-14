@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Product;
 use App\Http\Requests\StoreOrderRequest;
-
+use App\Models\User;
+    
 class OrderController extends Controller
 {
     /**
@@ -29,6 +30,26 @@ class OrderController extends Controller
             'product_price' => $product->price,
             'status' => 'pending',
         ]);
+
+        // Créer ou mettre à jour l'utilisateur
+        User::updateOrCreate(
+            ['email' => $validated['customer_email']],
+            [
+                'name' => $validated['customer_name'],
+                'phone' => $validated['customer_phone'],
+                'type' => 'customer',
+            ]
+        );
+
+        // Retourner une réponse JSON pour les requêtes AJAX
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Merci pour votre commande ! Nous vous contacterons bientôt.',
+                'product_name' => $product->name,
+                'product_price' => $product->formatted_price ?? $product->price . ' FCFA',
+            ]);
+        }
 
         return back()->with('success', 'Merci pour votre commande ! Nous vous contacterons bientôt.');
     }

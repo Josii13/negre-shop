@@ -403,7 +403,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const products = @json($products);
-    const whatsappNumber = "2250768298965"; // Numéro WhatsApp
+    const whatsappNumber = "{{ $whatsappNumber ?? '2250769465904' }}"; // Numéro WhatsApp depuis .env
     
     // Variable pour stocker le produit actuel
     let currentProductMarque = null;

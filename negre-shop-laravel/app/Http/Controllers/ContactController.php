@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contact;
+use App\Models\User;
 use App\Models\SiteSetting;
 use App\Http\Requests\StoreContactRequest;
 
@@ -29,7 +30,18 @@ class ContactController extends Controller
      */
     public function store(StoreContactRequest $request)
     {
-        Contact::create($request->validated());
+        $validated = $request->validated();
+        Contact::create($validated);
+
+        // Créer ou mettre à jour l'utilisateur
+        User::updateOrCreate(
+            ['email' => $validated['email']],
+            [
+                'name' => $validated['name'],
+                'phone' => $validated['phone'],
+                'type' => 'customer',
+            ]
+        );
 
         return back()->with('success', 'Merci pour votre message ! Nous vous contacterons bientôt.');
     }
