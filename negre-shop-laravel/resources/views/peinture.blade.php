@@ -499,39 +499,56 @@
 
 @section('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function() {
     // Données des produits
     const products = @json($products);
 
-    // Variable pour stocker le produit actuel (utilise celle du script global)
-    if (typeof currentProduct === 'undefined') {
-        var currentProduct = null;
-    }
+    // Variable pour stocker le produit actuel
+    let currentProductPeinture = null;
 
     // Ouvrir le modal de détails
     window.openDetailModal = function(index) {
-        currentProduct = products[index];
-        document.getElementById('detailImage').src = '/images/' + (currentProduct.image || 'img1.jpg');
-        document.getElementById('detailTitle').textContent = currentProduct.name;
-        document.getElementById('detailPrice').textContent = currentProduct.formatted_price || '';
-        document.getElementById('detailDescription').textContent = currentProduct.description || '';
-        document.getElementById('detailDimensions').textContent = currentProduct.dimensions || 'N/A';
-        document.getElementById('detailTechnique').textContent = currentProduct.technique || 'N/A';
-        document.getElementById('detailSupport').textContent = currentProduct.support || 'N/A';
-        document.getElementById('detailYear').textContent = currentProduct.year || 'N/A';
-        document.getElementById('detailModal').classList.add('active');
+        currentProductPeinture = products[index];
+        const detailModal = document.getElementById('detailModal');
+        const detailImage = document.getElementById('detailImage');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailPrice = document.getElementById('detailPrice');
+        const detailDescription = document.getElementById('detailDescription');
+        const detailDimensions = document.getElementById('detailDimensions');
+        const detailTechnique = document.getElementById('detailTechnique');
+        const detailSupport = document.getElementById('detailSupport');
+        const detailYear = document.getElementById('detailYear');
+
+        if (!detailModal) {
+            console.error('Modal de détails introuvable');
+            return;
+        }
+
+        detailImage.src = '/images/' + (currentProductPeinture.image || 'img1.jpg');
+        detailTitle.textContent = currentProductPeinture.name;
+        detailPrice.textContent = currentProductPeinture.formatted_price || '';
+        detailDescription.textContent = currentProductPeinture.description || '';
+        detailDimensions.textContent = currentProductPeinture.dimensions || 'N/A';
+        detailTechnique.textContent = currentProductPeinture.technique || 'N/A';
+        detailSupport.textContent = currentProductPeinture.support || 'N/A';
+        detailYear.textContent = currentProductPeinture.year || 'N/A';
+        detailModal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
 
     // Fermer le modal de détails
     window.closeDetailModal = function() {
-        document.getElementById('detailModal').classList.remove('active');
-        document.body.style.overflow = 'auto';
+        const detailModal = document.getElementById('detailModal');
+        if (detailModal) {
+            detailModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
     }
 
     // Commander depuis le modal de détails
     window.orderFromDetail = function() {
         closeDetailModal();
-        openOrderModalWithProduct(currentProduct);
+        openOrderModalWithProduct(currentProductPeinture);
     }
 
     // Ouvrir le modal de commande
@@ -541,30 +558,50 @@
     }
 
     function openOrderModalWithProduct(product) {
-        document.getElementById('product_id').value = product.id;
-        document.getElementById('message').value = `Je souhaite commander l'œuvre "${product.name}" au prix de ${product.formatted_price || product.price + ' FCFA'}.`;
-        document.getElementById('orderModal').classList.add('active');
+        const orderModal = document.getElementById('orderModal');
+        const productIdField = document.getElementById('product_id');
+        const messageField = document.getElementById('message');
+
+        if (!orderModal || !productIdField || !messageField) {
+            console.error('Éléments du formulaire introuvables');
+            return;
+        }
+
+        productIdField.value = product.id;
+        messageField.value = `Je souhaite commander l'œuvre "${product.name}" au prix de ${product.formatted_price || product.price + ' FCFA'}.`;
+        orderModal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
 
     // Fermer le modal de commande
     window.closeOrderModal = function() {
-        document.getElementById('orderModal').classList.remove('active');
-        document.body.style.overflow = 'auto';
+        const orderModal = document.getElementById('orderModal');
+        if (orderModal) {
+            orderModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
     }
 
     // Fermer les modals en cliquant à l'extérieur
-    document.getElementById('detailModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeDetailModal();
-        }
-    });
+    const detailModal = document.getElementById('detailModal');
+    const orderModal = document.getElementById('orderModal');
 
-    document.getElementById('orderModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeOrderModal();
-        }
-    });
+    if (detailModal) {
+        detailModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDetailModal();
+            }
+        });
+    }
+
+    if (orderModal) {
+        orderModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeOrderModal();
+            }
+        });
+    }
+});
 </script>
 @endsection
 

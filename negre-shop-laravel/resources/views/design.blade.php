@@ -499,23 +499,22 @@
 
 @section('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function() {
     const products = @json($products);
     
-    // Variable pour stocker le produit actuel (utilise celle du script global)
-    if (typeof currentProduct === 'undefined') {
-        var currentProduct = null;
-    }
+    // Variable pour stocker le produit actuel
+    let currentProductDesign = null;
 
     window.openDetailModal = function(index) {
-        currentProduct = products[index];
-        document.getElementById('detailImage').src = '/images/' + (currentProduct.image || 'img1.jpg');
-        document.getElementById('detailTitle').textContent = currentProduct.name;
-        document.getElementById('detailPrice').textContent = currentProduct.formatted_price || '';
-        document.getElementById('detailDescription').textContent = currentProduct.description || '';
-        document.getElementById('detailDimensions').textContent = currentProduct.dimensions || 'N/A';
-        document.getElementById('detailMaterials').textContent = currentProduct.materials || 'N/A';
-        document.getElementById('detailStyle').textContent = currentProduct.style || 'N/A';
-        document.getElementById('detailYear').textContent = currentProduct.year || 'N/A';
+        currentProductDesign = products[index];
+        document.getElementById('detailImage').src = '/images/' + (currentProductDesign.image || 'img1.jpg');
+        document.getElementById('detailTitle').textContent = currentProductDesign.name;
+        document.getElementById('detailPrice').textContent = currentProductDesign.formatted_price || '';
+        document.getElementById('detailDescription').textContent = currentProductDesign.description || '';
+        document.getElementById('detailDimensions').textContent = currentProductDesign.dimensions || 'N/A';
+        document.getElementById('detailMaterials').textContent = currentProductDesign.materials || 'N/A';
+        document.getElementById('detailStyle').textContent = currentProductDesign.style || 'N/A';
+        document.getElementById('detailYear').textContent = currentProductDesign.year || 'N/A';
         document.getElementById('detailModal').classList.add('active');
         document.body.style.overflow = 'hidden';
     }
@@ -527,7 +526,7 @@
 
     window.orderFromDetail = function() {
         closeDetailModal();
-        openOrderModalWithProduct(currentProduct);
+        openOrderModalWithProduct(currentProductDesign);
     }
 
     window.openOrderModal = function(index) {
@@ -553,6 +552,7 @@
     document.getElementById('orderModal').addEventListener('click', function(e) {
         if (e.target === this) closeOrderModal();
     });
+});
 </script>
 @endsection
 

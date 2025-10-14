@@ -401,24 +401,23 @@
 
 @section('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function() {
     const products = @json($products);
     const whatsappNumber = "2250768298965"; // Numéro WhatsApp
     
-    // Variable pour stocker le produit actuel (utilise celle du script global)
-    if (typeof currentProduct === 'undefined') {
-        var currentProduct = null;
-    }
+    // Variable pour stocker le produit actuel
+    let currentProductMarque = null;
 
     window.openDetailModal = function(index) {
-        currentProduct = products[index];
-        document.getElementById('detailImage').src = '/images/' + (currentProduct.image || 'img1.jpg');
-        document.getElementById('detailTitle').textContent = currentProduct.name;
-        document.getElementById('detailPrice').textContent = currentProduct.formatted_price || '';
-        document.getElementById('detailDescription').textContent = currentProduct.description || '';
-        document.getElementById('detailMaterial').textContent = currentProduct.materials || 'N/A';
-        document.getElementById('detailSizes').textContent = currentProduct.sizes || 'N/A';
-        document.getElementById('detailStyle').textContent = currentProduct.style || 'N/A';
-        document.getElementById('detailCollection').textContent = currentProduct.collection || 'N/A';
+        currentProductMarque = products[index];
+        document.getElementById('detailImage').src = '/images/' + (currentProductMarque.image || 'img1.jpg');
+        document.getElementById('detailTitle').textContent = currentProductMarque.name;
+        document.getElementById('detailPrice').textContent = currentProductMarque.formatted_price || '';
+        document.getElementById('detailDescription').textContent = currentProductMarque.description || '';
+        document.getElementById('detailMaterial').textContent = currentProductMarque.materials || 'N/A';
+        document.getElementById('detailSizes').textContent = currentProductMarque.sizes || 'N/A';
+        document.getElementById('detailStyle').textContent = currentProductMarque.style || 'N/A';
+        document.getElementById('detailCollection').textContent = currentProductMarque.collection || 'N/A';
         document.getElementById('detailModal').classList.add('active');
         document.body.style.overflow = 'hidden';
     }
@@ -430,7 +429,7 @@
 
     window.orderFromDetail = function() {
         closeDetailModal();
-        orderOnWhatsAppWithProduct(currentProduct);
+        orderOnWhatsAppWithProduct(currentProductMarque);
     }
 
     window.orderOnWhatsApp = function(index) {
@@ -447,6 +446,7 @@
     document.getElementById('detailModal').addEventListener('click', function(e) {
         if (e.target === this) closeDetailModal();
     });
+});
 </script>
 @endsection
 
