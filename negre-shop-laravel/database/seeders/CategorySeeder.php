@@ -33,7 +33,7 @@ class CategorySeeder extends Seeder
             ],
             [
                 'name' => 'Marque',
-                'slug' => 'marque',
+                'slug' => 'marques',
                 'description' => 'Découvrez ma collection de vêtements',
                 'banner_title' => 'Marque',
                 'banner_description' => 'Streetwear réinventé - où le minimalisme rencontre l\'élégance pour créer une expression universelle de la contemporanéité.',

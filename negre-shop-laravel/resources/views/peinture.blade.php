@@ -4,50 +4,7 @@
 
 @section('styles')
 <style>
-    /* Products Section */
-    .products-section {
-        padding: 4rem 2rem;
-    }
-
-    .products-grid {
-        max-width: 1400px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 2rem;
-    }
-
-    .product-card {
-        background-color: #FFFFFF;
-        transition: all 0.3s ease;
-        border: 1px solid #F0F0F0;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .product-card:hover {
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    }
-
-    .product-image {
-        width: 100%;
-        height: 280px;
-        background-color: #F7F7F7;
-        overflow: hidden;
-        position: relative;
-    }
-
-    .product-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.4s ease;
-    }
-
-    .product-card:hover .product-image img {
-        transform: scale(1.05);
-    }
-
+    /* Styles spécifiques à la page Peinture */
     .view-eye {
         position: absolute;
         top: 50%;
@@ -84,10 +41,6 @@
         stroke: #FFFFFF;
     }
 
-    .product-info {
-        padding: 1.25rem;
-    }
-
     .product-header {
         display: flex;
         justify-content: space-between;
@@ -95,37 +48,10 @@
         margin-bottom: 1rem;
     }
 
-    .product-info h3 {
-        font-size: 1.1rem;
-        font-weight: 400;
-        letter-spacing: -0.01em;
-    }
-
     .product-price {
         font-size: 1.2rem;
         font-weight: 500;
         color: #000000;
-    }
-
-    .product-btn {
-        width: 100%;
-        padding: 0.85rem;
-        background-color: #000000;
-        color: #FFFFFF;
-        border: none;
-        font-size: 0.9rem;
-        font-weight: 400;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-family: 'Inter', sans-serif;
-        letter-spacing: 0.02em;
-        border-radius: 2px;
-    }
-
-    .product-btn:hover {
-        background-color: #333;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
     /* Modal de détails */
@@ -159,17 +85,6 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 0;
-    }
-
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(40px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
     }
 
     .detail-image-container {
@@ -312,69 +227,8 @@
         letter-spacing: -0.02em;
     }
 
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
-        font-weight: 400;
-    }
-
-    .form-group input,
-    .form-group textarea {
-        width: 100%;
-        padding: 0.9rem;
-        border: 1px solid #E0E0E0;
-        background-color: #FAFAFA;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-        border-radius: 2px;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus {
-        outline: none;
-        border-color: #000000;
-        background-color: #FFFFFF;
-        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
-    }
-
-    .form-group textarea {
-        resize: vertical;
-        min-height: 120px;
-    }
-
-    .submit-btn {
-        width: 100%;
-        padding: 1rem;
-        background-color: #000000;
-        color: #FFFFFF;
-        border: none;
-        font-size: 1rem;
-        font-weight: 400;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-family: 'Inter', sans-serif;
-        letter-spacing: 0.02em;
-        border-radius: 2px;
-    }
-
-    .submit-btn:hover {
-        background-color: #333;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
     /* Responsive */
     @media (max-width: 768px) {
-        .products-grid {
-            grid-template-columns: 1fr;
-        }
-
         .detail-modal-content {
             grid-template-columns: 1fr;
             max-height: 85vh;

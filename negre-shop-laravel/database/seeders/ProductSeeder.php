@@ -15,7 +15,7 @@ class ProductSeeder extends Seeder
     {
         $peinture = Category::where('slug', 'peinture')->first();
         $design = Category::where('slug', 'design')->first();
-        $marque = Category::where('slug', 'marque')->first();
+        $marque = Category::where('slug', 'marques')->first();
 
         // Produits Peinture
         $peintureProducts = [

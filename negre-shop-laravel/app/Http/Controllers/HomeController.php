@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CarouselSlide;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\PageHomeContent;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -23,7 +24,10 @@ class HomeController extends Controller
         // Récupérer les produits en vedette
         $featuredProducts = Product::featured()->available()->take(4)->get();
 
-        return view('home', compact('slides', 'categories', 'featuredProducts'));
+        // Récupérer le contenu dynamique de la page
+        $pageContent = PageHomeContent::first();
+
+        return view('home', compact('slides', 'categories', 'featuredProducts', 'pageContent'));
     }
 }
 

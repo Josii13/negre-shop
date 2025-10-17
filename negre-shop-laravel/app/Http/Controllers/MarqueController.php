@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\PageMarquesContent;
 use Illuminate\Http\Request;
 
 class MarqueController extends Controller
@@ -22,7 +23,10 @@ class MarqueController extends Controller
             ->ordered()
             ->get();
 
-        return view('marques', compact('category', 'products'));
+        // Récupérer le contenu dynamique de la page
+        $pageContent = PageMarquesContent::first();
+
+        return view('marques', compact('category', 'products', 'pageContent'));
     }
 }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Models\PageGalleryContent;
 use Illuminate\Http\Request;
 
 class GalleryController extends Controller
@@ -33,7 +34,10 @@ class GalleryController extends Controller
             ->ordered()
             ->get();
 
-        return view('gallery', compact('atelierActivities', 'activities', 'evenements', 'podcasts'));
+        // Récupérer le contenu dynamique de la page
+        $pageContent = PageGalleryContent::first();
+
+        return view('gallery', compact('atelierActivities', 'activities', 'evenements', 'podcasts', 'pageContent'));
     }
 }
 

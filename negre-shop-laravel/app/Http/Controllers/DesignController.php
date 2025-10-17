@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\PageDesignContent;
 use Illuminate\Http\Request;
 
 class DesignController extends Controller
@@ -22,7 +23,10 @@ class DesignController extends Controller
             ->ordered()
             ->get();
 
-        return view('design', compact('category', 'products'));
+        // Récupérer le contenu dynamique de la page
+        $pageContent = PageDesignContent::first();
+
+        return view('design', compact('category', 'products', 'pageContent'));
     }
 }
 

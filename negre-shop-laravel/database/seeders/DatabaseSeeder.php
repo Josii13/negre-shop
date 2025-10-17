@@ -13,10 +13,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Créer un utilisateur admin par défaut
-        User::factory()->create([
+        // Créer un super admin par défaut
+        User::create([
+            'name' => 'Super Admin',
+            'email' => 'superadmin@negreshop.com',
+            'password' => bcrypt('password'),
+            'type' => 'super_admin',
+            'email_verified_at' => now(),
+        ]);
+
+        // Créer un admin par défaut
+        User::create([
             'name' => 'Admin',
-            'email' => 'admin@example.com',
+            'email' => 'admin@negreshop.com',
+            'password' => bcrypt('password'),
+            'type' => 'admin',
+            'email_verified_at' => now(),
         ]);
 
         // Appeler tous les seeders dans l'ordre
@@ -26,6 +38,7 @@ class DatabaseSeeder extends Seeder
             CarouselSlideSeeder::class,
             ActivitySeeder::class,
             SiteSettingSeeder::class,
+            PageContentsSeeder::class,
         ]);
     }
 }

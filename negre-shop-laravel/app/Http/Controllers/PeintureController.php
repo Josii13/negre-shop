@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\PagePeintureContent;
 use Illuminate\Http\Request;
 
 class PeintureController extends Controller
@@ -22,7 +23,10 @@ class PeintureController extends Controller
             ->ordered()
             ->get();
 
-        return view('peinture', compact('category', 'products'));
+        // Récupérer le contenu dynamique de la page
+        $pageContent = PagePeintureContent::first();
+
+        return view('peinture', compact('category', 'products', 'pageContent'));
     }
 }
 

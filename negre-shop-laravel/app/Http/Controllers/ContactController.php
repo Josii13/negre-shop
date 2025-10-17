@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Contact;
 use App\Models\User;
 use App\Models\SiteSetting;
+use App\Models\PageContactContent;
 use App\Http\Requests\StoreContactRequest;
 
 class ContactController extends Controller
@@ -14,15 +15,18 @@ class ContactController extends Controller
      */
     public function index()
     {
-        // Récupérer les informations de contact depuis les paramètres du site
+        // Récupérer le contenu dynamique de la page
+        $pageContent = PageContactContent::first();
+
+        // Fallback vers les anciens paramètres si pas de contenu dynamique
         $contactInfo = [
-            'address' => SiteSetting::get('contact_address', 'Cocody, Riviera Abatta<br>Abidjan, Côte d\'Ivoire'),
-            'email' => SiteSetting::get('contact_email', 'fredericnda.ci@gmail.com'),
-            'phone' => SiteSetting::get('contact_phone', '+225 07 68 29 89 65'),
+            'address' => $pageContent->info_address ?? SiteSetting::get('contact_address', 'Cocody, Riviera Abatta<br>Abidjan, Côte d\'Ivoire'),
+            'email' => $pageContent->info_email ?? SiteSetting::get('contact_email', 'fredericnda.ci@gmail.com'),
+            'phone' => $pageContent->info_phone ?? SiteSetting::get('contact_phone', '+225 07 68 29 89 65'),
             'hours' => SiteSetting::get('contact_hours', 'Lundi - Vendredi: 9h - 18h<br>Sur rendez-vous uniquement'),
         ];
 
-        return view('contact', compact('contactInfo'));
+        return view('contact', compact('contactInfo', 'pageContent'));
     }
 
     /**

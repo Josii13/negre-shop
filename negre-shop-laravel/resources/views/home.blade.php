@@ -4,7 +4,7 @@
 
 @section('styles')
 <style>
-    /* Carousel Section */
+    /* Styles spécifiques à la page d'accueil - Carousel */
     .carousel-section {
         width: 100%;
         max-width: 1400px;
@@ -126,7 +126,7 @@
         border-radius: 6px;
     }
 
-    /* Hero Section */
+    /* Hero Section Override pour la page d'accueil */
     .hero {
         max-width: 1400px;
         margin: 0 auto;
@@ -161,25 +161,7 @@
         transform: scale(1.05);
     }
 
-    .hero-text {
-        padding: 2rem 0;
-    }
-
-    .hero-text h1 {
-        font-size: 3rem;
-        font-weight: 300;
-        margin-bottom: 2rem;
-        letter-spacing: -0.03em;
-    }
-
-    .hero-text p {
-        font-size: 1.1rem;
-        line-height: 1.8;
-        color: #555;
-        margin-bottom: 1.5rem;
-        font-weight: 300;
-    }
-
+    /* Responsive */
     @media (max-width: 768px) {
         .carousel-section {
             margin: 80px auto 40px;
@@ -190,6 +172,32 @@
             height: 400px;
         }
 
+        .carousel-caption h3 {
+            font-size: 1.5rem;
+        }
+
+        .carousel-caption p {
+            font-size: 0.95rem;
+        }
+
+        .carousel-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+        }
+
+        .carousel-btn.prev {
+            left: 10px;
+        }
+
+        .carousel-btn.next {
+            right: 10px;
+        }
+
+        .hero {
+            padding: 0 1rem 2rem;
+        }
+
         .hero-content {
             grid-template-columns: 1fr;
             gap: 2rem;
@@ -198,10 +206,6 @@
 
         .hero-image {
             height: 400px;
-        }
-
-        .hero-text h1 {
-            font-size: 2rem;
         }
     }
 </style>

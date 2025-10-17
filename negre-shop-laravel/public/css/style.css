@@ -45,6 +45,12 @@ nav {
     letter-spacing: 0.05em;
 }
 
+.logo-image {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+}
+
 .nav-links {
     display: flex;
     gap: 2.5rem;

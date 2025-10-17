@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PeintureController;
 use App\Http\Controllers\DesignController;
@@ -8,29 +8,122 @@ use App\Http\Controllers\MarqueController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\ActivityController as AdminActivityController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CarouselController;
+use App\Http\Controllers\Admin\PageContentController;
+use Illuminate\Support\Facades\Route;
 
-/**
- * Routes publiques du site
- */
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
 
-// Page d'accueil
+// Homepage
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Page Peinture
+// Peinture
 Route::get('/peinture', [PeintureController::class, 'index'])->name('peinture');
 
-// Page Design
+// Design
 Route::get('/design', [DesignController::class, 'index'])->name('design');
 
-// Page Marque
-Route::get('/marque', [MarqueController::class, 'index'])->name('marque');
+// Marques
+Route::get('/marques/{slug?}', [MarqueController::class, 'index'])->name('marques');
 
-// Page Gallery (NÈGRE Workshop)
+// Gallery
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
 
-// Page Contact
+// Contact
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
-// Commandes
+// Orders (pour les commandes publiques)
 Route::post('/order', [OrderController::class, 'store'])->name('order.store');
+
+/*
+|--------------------------------------------------------------------------
+| Auth Routes (Breeze)
+|--------------------------------------------------------------------------
+*/
+
+require __DIR__.'/auth.php';
+
+// Dashboard utilisateur standard (Breeze)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        // Rediriger admin vers admin dashboard, customer vers leur espace
+        $user = request()->user();
+        if ($user && ($user->type === 'admin' || $user->type === 'super_admin')) {
+            return redirect()->route('admin.dashboard');
+        }
+        return view('dashboard');
+    })->name('dashboard');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes (Admin & Super Admin)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Products
+    Route::resource('products', AdminProductController::class);
+    
+    // Categories
+    Route::resource('categories', AdminCategoryController::class);
+    
+    // Orders
+    Route::resource('orders', AdminOrderController::class)->only(['index', 'show', 'update', 'destroy']);
+    
+    // Activities
+    Route::resource('activities', AdminActivityController::class);
+    
+    // Users
+    Route::resource('users', UserController::class);
+    
+    // Profile & Settings
+    Route::get('/profile', function () {
+        return view('admin.profile');
+    })->name('profile');
+    
+    Route::get('/settings', function () {
+        return view('admin.settings');
+    })->name('settings');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Developer Settings Routes (Super Admin Only)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'super_admin'])->prefix('admin/developer')->name('admin.developer.')->group(function () {
+    
+    // Carousel Slides
+    Route::resource('carousel', CarouselController::class)->except(['show']);
+    
+    // Page Contents (textes dynamiques)
+    Route::get('/page-contents', [PageContentController::class, 'index'])->name('page-contents.index');
+    Route::get('/page-contents/{page}', [PageContentController::class, 'edit'])->name('page-contents.edit');
+    Route::put('/page-contents/{page}', [PageContentController::class, 'update'])->name('page-contents.update');
+    
+    // Site Settings
+    Route::get('/site-settings', function () {
+        return view('admin.developer.site-settings');
+    })->name('site-settings');
+});
