@@ -11,15 +11,6 @@
     </a>
 </div>
 
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    <i class="fas fa-check-circle"></i> {{ session('success') }}
-    <button type="button" class="close" data-dismiss="alert">
-        <span>&times;</span>
-    </button>
-</div>
-@endif
-
 <!-- DataTales -->
 <div class="card shadow mb-4">
     <div class="card-header py-3">
@@ -44,7 +35,7 @@
                         <td>{{ $slide->order }}</td>
                         <td>
                             @if($slide->image)
-                            <img src="{{ asset('storage/' . $slide->image) }}" alt="{{ $slide->title }}" style="max-width: 100px; height: auto;">
+                            <img src="{{ asset('images/' . $slide->image) }}" alt="{{ $slide->title }}" style="max-width: 100px; height: auto;">
                             @else
                             <span class="text-muted">Aucune image</span>
                             @endif
@@ -61,13 +52,13 @@
                             @endif
                         </td>
                         <td>
-                            <a href="{{ route('admin.developer.carousel.edit', $slide) }}" class="btn btn-sm btn-info">
+                            <a href="{{ route('admin.developer.carousel.edit', $slide) }}" class="btn btn-sm btn-warning">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <form action="{{ route('admin.developer.carousel.destroy', $slide) }}" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce slide ?');">
+                            <form action="{{ route('admin.developer.carousel.destroy', $slide) }}" method="POST" class="delete-form" style="display: inline-block;" data-slide-title="{{ $slide->title }}">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">
+                                <button type="button" class="btn btn-sm btn-danger btn-delete">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -88,5 +79,69 @@
         @endif
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        // Afficher la modale de succès si présente
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Succès !',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#4e73df',
+                timer: 3000,
+                timerProgressBar: true
+            });
+        @endif
+
+        // Afficher la modale d'erreur si présente
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur !',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#e74a3b'
+            });
+        @endif
+
+        // Gestion de la suppression avec confirmation
+        $('.btn-delete').on('click', function() {
+            const form = $(this).closest('.delete-form');
+            const slideTitle = form.data('slide-title');
+
+            Swal.fire({
+                title: 'Êtes-vous sûr ?',
+                html: `Vous êtes sur le point de supprimer le slide <strong>"${slideTitle}"</strong>.<br>Cette action est irréversible.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e74a3b',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Oui, supprimer',
+                cancelButtonText: 'Annuler',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Afficher la modale de chargement
+                    Swal.fire({
+                        title: 'Suppression en cours...',
+                        html: 'Veuillez patienter',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    // Soumettre le formulaire
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
 @endsection
 

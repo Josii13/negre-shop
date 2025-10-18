@@ -17,7 +17,7 @@
         <h6 class="m-0 font-weight-bold text-primary">Informations de l'Activité</h6>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.activities.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="createActivityForm" action="{{ route('admin.activities.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <div class="row">
@@ -67,12 +67,31 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="date">Date <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control @error('date') is-invalid @enderror" 
+                               id="date" name="date" value="{{ old('date') }}" required>
+                        @error('date')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Lieu</label>
+                        <input type="text" class="form-control @error('location') is-invalid @enderror" 
+                               id="location" name="location" value="{{ old('location') }}" placeholder="Ex: Abidjan, Côte d'Ivoire">
+                        @error('location')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
                         <label for="image">Image</label>
                         <input type="file" class="form-control-file @error('image') is-invalid @enderror" 
                                id="image" name="image" accept="image/*">
                         @error('image')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <small class="form-text text-muted">Formats: JPEG, PNG, JPG, GIF, WEBP. Max: 5MB</small>
                     </div>
                 </div>
             </div>
@@ -90,5 +109,41 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Modale de chargement lors de la soumission du formulaire
+    $('#createActivityForm').on('submit', function(e) {
+        Swal.fire({
+            title: 'Création en cours...',
+            html: 'Veuillez patienter pendant que nous créons l\'activité.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    });
+
+    // Afficher les erreurs de validation
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreurs de validation',
+            html: '<div class="text-left"><ul style="list-style-position: inside;">' +
+                @foreach($errors->all() as $error)
+                    '<li>{{ $error }}</li>' +
+                @endforeach
+                '</ul></div>',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#e74a3b',
+            width: '600px'
+        });
+    @endif
+});
+</script>
 @endsection
 

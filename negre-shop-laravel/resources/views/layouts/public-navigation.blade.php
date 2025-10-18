@@ -13,6 +13,11 @@
             <li><a href="{{ route('marques') }}">Marque</a></li>
             <li><a href="{{ route('gallery') }}">Gallery</a></li>
             <li><a href="{{ route('contact') }}">Contact</a></li>
+            @auth
+                @if(in_array(Auth::user()->type, ['admin', 'super_admin']))
+                    <li><a href="{{ route('dashboard') }}" style="background: #000; color: #fff; padding: 0.5rem 1rem; border-radius: 4px;">Dashboard</a></li>
+                @endif
+            @endauth
         </ul>
     </div>
 </nav>

@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -59,15 +62,47 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories.index')->with('success', 'Catégorie mise à jour avec succès !');
     }
 
-    public function destroy(Category $category)
+    public function destroy(Request $request, Category $category)
     {
-        if ($category->products()->count() > 0) {
-            return redirect()->route('admin.categories.index')->with('error', 'Impossible de supprimer cette catégorie car elle contient des produits.');
+        $productsCount = $category->products()->count();
+
+        // Si la catégorie a des produits, vérifier le mot de passe
+        if ($productsCount > 0) {
+            // Valider que le mot de passe a été fourni
+            $request->validate([
+                'password' => 'required',
+            ], [
+                'password.required' => 'Le mot de passe est requis pour cette opération.',
+            ]);
+
+            // Vérifier le mot de passe de l'utilisateur connecté
+            if (!Hash::check($request->password, Auth::user()->password)) {
+                return redirect()->route('admin.categories.index')
+                    ->with('error', 'Mot de passe incorrect. La suppression a été annulée.');
+            }
+
+            // Récupérer et supprimer les images des produits avant de les supprimer
+            $products = $category->products;
+            foreach ($products as $product) {
+                if ($product->image) {
+                    Storage::disk('public')->delete($product->image);
+                }
+            }
+
+            // Supprimer tous les produits de cette catégorie
+            $category->products()->delete();
         }
 
+        // Supprimer la catégorie
         $category->delete();
 
-        return redirect()->route('admin.categories.index')->with('success', 'Catégorie supprimée avec succès !');
+        if ($productsCount > 0) {
+            return redirect()->route('admin.categories.index')
+                ->with('success', "Catégorie et ses {$productsCount} produit(s) supprimé(s) avec succès !");
+        }
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', 'Catégorie supprimée avec succès !');
     }
 }
 

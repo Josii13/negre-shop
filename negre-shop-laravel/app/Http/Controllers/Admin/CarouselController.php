@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CarouselSlide;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class CarouselController extends Controller
 {
@@ -43,8 +42,10 @@ class CarouselController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('carousel', 'public');
-            $validated['image'] = $imagePath;
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images'), $imageName);
+            $validated['image'] = $imageName;
         }
 
         $validated['is_active'] = $request->has('is_active');
@@ -82,12 +83,14 @@ class CarouselController extends Controller
 
         if ($request->hasFile('image')) {
             // Supprimer l'ancienne image
-            if ($carousel->image) {
-                Storage::disk('public')->delete($carousel->image);
+            if ($carousel->image && file_exists(public_path('images/' . $carousel->image))) {
+                unlink(public_path('images/' . $carousel->image));
             }
 
-            $imagePath = $request->file('image')->store('carousel', 'public');
-            $validated['image'] = $imagePath;
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images'), $imageName);
+            $validated['image'] = $imageName;
         }
 
         $validated['is_active'] = $request->has('is_active');
@@ -105,8 +108,8 @@ class CarouselController extends Controller
     public function destroy(CarouselSlide $carousel)
     {
         // Supprimer l'image
-        if ($carousel->image) {
-            Storage::disk('public')->delete($carousel->image);
+        if ($carousel->image && file_exists(public_path('images/' . $carousel->image))) {
+            unlink(public_path('images/' . $carousel->image));
         }
 
         $carousel->delete();

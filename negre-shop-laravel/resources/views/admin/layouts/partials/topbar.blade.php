@@ -45,13 +45,19 @@
             </div>
         </li>
 
-        <!-- Nav Item - Alerts -->
+        <!-- Nav Item - Alerts (Commandes en attente) -->
+        @php
+            $pendingOrders = \App\Models\Order::where('status', 'pending')->latest()->take(5)->get();
+            $pendingOrdersCount = \App\Models\Order::where('status', 'pending')->count();
+        @endphp
         <li class="nav-item dropdown no-arrow mx-1">
             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
                 <!-- Counter - Alerts -->
-                <span class="badge badge-danger badge-counter">3+</span>
+                @if($pendingOrdersCount > 0)
+                    <span class="badge badge-danger badge-counter">{{ $pendingOrdersCount > 9 ? '9+' : $pendingOrdersCount }}</span>
+                @endif
             </a>
             <!-- Dropdown - Alerts -->
             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -59,28 +65,44 @@
                 <h6 class="dropdown-header">
                     Centre d'alertes
                 </h6>
-                <a class="dropdown-item d-flex align-items-center" href="#">
-                    <div class="mr-3">
-                        <div class="icon-circle bg-primary">
-                            <i class="fas fa-file-alt text-white"></i>
+                @forelse($pendingOrders as $order)
+                    <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.orders.index') }}">
+                        <div class="mr-3">
+                            <div class="icon-circle bg-warning">
+                                <i class="fas fa-shopping-cart text-white"></i>
+                            </div>
                         </div>
+                        <div>
+                            <div class="small text-gray-500">{{ $order->created_at->diffForHumans() }}</div>
+                            <span class="font-weight-bold">Nouvelle commande de {{ $order->customer_name }}</span>
+                            <div class="small text-truncate">{{ $order->product_name }} - {{ number_format($order->product_price, 0, ',', ' ') }} FCFA</div>
+                        </div>
+                    </a>
+                @empty
+                    <div class="dropdown-item text-center text-gray-500 py-3">
+                        <i class="fas fa-check-circle fa-2x mb-2 text-success"></i>
+                        <p class="mb-0">Aucune commande en attente</p>
                     </div>
-                    <div>
-                        <div class="small text-gray-500">December 12, 2019</div>
-                        <span class="font-weight-bold">Un nouveau rapport mensuel est prêt à télécharger!</span>
-                    </div>
-                </a>
-                <a class="dropdown-item text-center small text-gray-500" href="#">Afficher toutes les alertes</a>
+                @endforelse
+                @if($pendingOrdersCount > 0)
+                    <a class="dropdown-item text-center small text-gray-500" href="{{ route('admin.orders.index') }}">Voir toutes les commandes</a>
+                @endif
             </div>
         </li>
 
-        <!-- Nav Item - Messages -->
+        <!-- Nav Item - Messages (Requêtes de contact) -->
+        @php
+            $recentContacts = \App\Models\Contact::latest()->take(5)->get();
+            $contactsCount = \App\Models\Contact::count();
+        @endphp
         <li class="nav-item dropdown no-arrow mx-1">
             <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-envelope fa-fw"></i>
                 <!-- Counter - Messages -->
-                <span class="badge badge-danger badge-counter">7</span>
+                @if($contactsCount > 0)
+                    <span class="badge badge-danger badge-counter">{{ $contactsCount > 9 ? '9+' : $contactsCount }}</span>
+                @endif
             </a>
             <!-- Dropdown - Messages -->
             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -88,17 +110,24 @@
                 <h6 class="dropdown-header">
                     Centre de messages
                 </h6>
-                <a class="dropdown-item d-flex align-items-center" href="#">
-                    <div class="dropdown-list-image mr-3">
-                        <img class="rounded-circle" src="{{ asset('admin/img/undraw_profile_1.svg') }}" alt="...">
-                        <div class="status-indicator bg-success"></div>
+                @forelse($recentContacts as $contact)
+                    <a class="dropdown-item d-flex align-items-center" href="#" onclick="event.preventDefault(); showContactModal('{{ $contact->id }}', '{{ addslashes($contact->name) }}', '{{ addslashes($contact->email) }}', '{{ addslashes($contact->phone ?? 'N/A') }}', '{{ addslashes($contact->message) }}', '{{ $contact->created_at->format('d/m/Y à H:i') }}');">
+                        <div class="dropdown-list-image mr-3">
+                            <div class="icon-circle bg-primary">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                        </div>
+                        <div class="font-weight-bold">
+                            <div class="text-truncate">{{ Str::limit($contact->message, 60) }}</div>
+                            <div class="small text-gray-500">{{ $contact->name }} · {{ $contact->created_at->diffForHumans() }}</div>
+                        </div>
+                    </a>
+                @empty
+                    <div class="dropdown-item text-center text-gray-500 py-3">
+                        <i class="fas fa-inbox fa-2x mb-2 text-muted"></i>
+                        <p class="mb-0">Aucun message</p>
                     </div>
-                    <div class="font-weight-bold">
-                        <div class="text-truncate">Salut! Y a-t-il un problème? Je n'ai pas encore reçu mon article...</div>
-                        <div class="small text-gray-500">Emily Fowler · 58m</div>
-                    </div>
-                </a>
-                <a class="dropdown-item text-center small text-gray-500" href="#">Voir tous les messages</a>
+                @endforelse
             </div>
         </li>
 
@@ -114,13 +143,9 @@
             <!-- Dropdown - User Information -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="{{ route('admin.profile') }}">
-                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Profil
-                </a>
-                <a class="dropdown-item" href="{{ route('admin.settings') }}">
-                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Paramètres
+                <a class="dropdown-item" href="{{ route('admin.profile.change-password') }}">
+                    <i class="fas fa-key fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Modifier mon mot de passe
                 </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">

@@ -43,7 +43,7 @@
     <label for="image">Image{{ isset($carousel) ? '' : ' *' }}</label>
     @if(isset($carousel) && $carousel->image)
         <div class="mb-2">
-            <img src="{{ asset('storage/' . $carousel->image) }}" alt="{{ $carousel->title }}" style="max-width: 300px; height: auto;" class="img-thumbnail">
+            <img src="{{ asset('images/' . $carousel->image) }}" alt="{{ $carousel->title }}" style="max-width: 300px; height: auto;" class="img-thumbnail">
         </div>
     @endif
     <input type="file" class="form-control-file @error('image') is-invalid @enderror" id="image" name="image" accept="image/*" {{ isset($carousel) ? '' : 'required' }}>

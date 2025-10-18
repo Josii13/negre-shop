@@ -17,7 +17,7 @@
         <h6 class="m-0 font-weight-bold text-primary">Informations de l'Utilisateur</h6>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.users.update', $user) }}" method="POST">
+        <form action="{{ route('admin.users.update', $user) }}" method="POST" id="editUserForm">
             @csrf
             @method('PUT')
             
@@ -83,5 +83,65 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Modale de chargement lors de la soumission
+    $('#editUserForm').on('submit', function(e) {
+        Swal.fire({
+            title: 'Mise à jour en cours...',
+            html: 'Veuillez patienter pendant la mise à jour de l\'utilisateur.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    });
+
+    // Afficher les messages de succès
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Succès !',
+            text: '{{ session('success') }}',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#4e73df',
+            timer: 3000,
+            timerProgressBar: true
+        });
+    @endif
+
+    // Afficher les messages d'erreur
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur !',
+            text: '{{ session('error') }}',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#e74a3b'
+        });
+    @endif
+
+    // Afficher les erreurs de validation
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreurs de validation',
+            html: '<div style="text-align: left;"><ul style="list-style-position: inside;">' +
+                @foreach($errors->all() as $error)
+                    '<li>{{ $error }}</li>' +
+                @endforeach
+                '</ul></div>',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#e74a3b',
+            width: '600px'
+        });
+    @endif
+});
+</script>
 @endsection
 

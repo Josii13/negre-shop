@@ -15,7 +15,7 @@
         <h6 class="m-0 font-weight-bold text-primary">Informations du Slide</h6>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.developer.carousel.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="createSlideForm" action="{{ route('admin.developer.carousel.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             @include('admin.developer.carousel.form')
             
@@ -29,5 +29,43 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        // Afficher les erreurs de validation avec SweetAlert2
+        @if($errors->any())
+            let errorList = '<ul style="text-align: left;">';
+            @foreach($errors->all() as $error)
+                errorList += '<li>{{ $error }}</li>';
+            @endforeach
+            errorList += '</ul>';
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreurs de validation',
+                html: errorList,
+                confirmButtonColor: '#e74a3b',
+                width: '600px'
+            });
+        @endif
+
+        // Modale de chargement lors de la soumission
+        $('#createSlideForm').on('submit', function() {
+            Swal.fire({
+                title: 'Création en cours...',
+                html: 'Veuillez patienter',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        });
+    });
+</script>
 @endsection
 

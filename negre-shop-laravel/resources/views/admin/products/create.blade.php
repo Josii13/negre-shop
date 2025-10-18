@@ -17,7 +17,7 @@
         <h6 class="m-0 font-weight-bold text-primary">Informations du Produit</h6>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="createProductForm" action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <div class="row">
@@ -85,13 +85,13 @@
                         @error('image')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="form-text text-muted">Formats: JPEG, PNG, JPG, GIF, WEBP. Max: 2MB</small>
+                        <small class="form-text text-muted">Formats: JPEG, PNG, JPG, GIF, WEBP. Max: 5MB</small>
                     </div>
 
                     <div class="form-group">
                         <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="is_available" name="is_available" 
-                                   {{ old('is_available', true) ? 'checked' : '' }}>
+                            <input type="checkbox" class="custom-control-input" id="is_available" name="is_available" value="1"
+                                {{ old('is_available', true) ? 'checked' : '' }}>
                             <label class="custom-control-label" for="is_available">Disponible à la vente</label>
                         </div>
                     </div>
@@ -111,5 +111,41 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Modale de chargement lors de la soumission du formulaire
+    $('#createProductForm').on('submit', function(e) {
+        Swal.fire({
+            title: 'Création en cours...',
+            html: 'Veuillez patienter pendant que nous créons le produit.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    });
+
+    // Afficher les erreurs de validation
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreurs de validation',
+            html: '<div class="text-left"><ul style="list-style-position: inside;">' +
+                @foreach($errors->all() as $error)
+                    '<li>{{ $error }}</li>' +
+                @endforeach
+                '</ul></div>',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#e74a3b',
+            width: '600px'
+        });
+    @endif
+});
+</script>
 @endsection
 

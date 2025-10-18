@@ -11,15 +11,6 @@
     </a>
 </div>
 
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-@endif
-
 <!-- DataTales -->
 <div class="card shadow mb-4">
     <div class="card-header py-3">
@@ -64,10 +55,10 @@
                                 <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');">
+                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="delete-form" style="display: inline-block;" data-product-name="{{ $product->name }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
+                                    <button type="button" class="btn btn-sm btn-danger btn-delete">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -88,5 +79,70 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Afficher les messages de succès
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Succès !',
+            text: '{{ session('success') }}',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#4e73df',
+            timer: 3000,
+            timerProgressBar: true
+        });
+    @endif
+
+    // Afficher les messages d'erreur
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur !',
+            text: '{{ session('error') }}',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#e74a3b'
+        });
+    @endif
+
+    // Confirmation de suppression avec SweetAlert2
+    $('.btn-delete').on('click', function() {
+        const form = $(this).closest('.delete-form');
+        const productName = form.data('product-name');
+
+        Swal.fire({
+            title: 'Êtes-vous sûr ?',
+            html: `Vous êtes sur le point de supprimer le produit <strong>"${productName}"</strong>.<br>Cette action est irréversible.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e74a3b',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Oui, supprimer',
+            cancelButtonText: 'Annuler',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Afficher la modale de chargement
+                Swal.fire({
+                    title: 'Suppression en cours...',
+                    html: 'Veuillez patienter.',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                // Soumettre le formulaire
+                form.submit();
+            }
+        });
+    });
+});
+</script>
 @endsection
 

@@ -11,9 +11,11 @@ class CarouselSlide extends Model
 
     protected $fillable = [
         'title',
+        'subtitle',
         'description',
         'image',
-        'link',
+        'button_text',
+        'button_link',
         'order',
         'is_active',
     ];

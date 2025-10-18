@@ -14,11 +14,11 @@ class PageContentsSeeder extends Seeder
     {
         // HOME PAGE
         DB::table('page_home_contents')->insert([
+            'hero_image' => 'img2.jpg',
             'hero_title' => 'Frederic N\'DA',
-            'hero_subtitle' => 'Artiste Peintre & Designer',
-            'hero_description' => 'Découvrez l\'univers artistique unique de Frederic N\'DA, où tradition et modernité se rencontrent',
-            'hero_cta_text' => 'Découvrir mes œuvres',
-            'hero_cta_link' => '/peinture',
+            'hero_paragraph_1' => 'Artiste peintre et designer ivoirien, Frederic N\'DA développe un univers artistique où la peinture contemporaine dialogue avec le design mobilier.',
+            'hero_paragraph_2' => 'Son travail explore les formes, les textures et les couleurs, créant des pièces uniques qui transcendent les frontières entre l\'art et le fonctionnel.',
+            'hero_paragraph_3' => 'Basé à Cocody, Abidjan, il conçoit chaque œuvre comme une invitation à la contemplation et à la découverte.',
             'about_title' => 'À Propos de l\'Artiste',
             'about_description' => 'Artiste peintre et designer basé en Côte d\'Ivoire, Frederic N\'DA combine tradition africaine et modernité dans ses œuvres. Son approche unique mêle couleurs vibrantes et compositions audacieuses.',
             'features_title' => 'Mes Domaines d\'Expression',

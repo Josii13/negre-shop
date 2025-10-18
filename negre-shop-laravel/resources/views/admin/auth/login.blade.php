@@ -5,6 +5,15 @@
 @section('content')
 <div class="container">
 
+    <!-- Bouton retour au site -->
+    <div class="row">
+        <div class="col-12">
+            <a href="{{ url('/') }}" class="btn btn-link text-dark mt-3">
+                <i class="fas fa-arrow-left"></i> Retour au site
+            </a>
+        </div>
+    </div>
+
     <!-- Outer Row -->
     <div class="row justify-content-center">
 
@@ -76,19 +85,12 @@
                                     </button>
                                 </form>
 
-                                <hr>
-
-                                @if (Route::has('password.request'))
-                                    <div class="text-center">
-                                        <a class="small" href="{{ route('password.request') }}">Mot de passe oublié ?</a>
-                                    </div>
-                                @endif
-
-                                @if (Route::has('register'))
-                                    <div class="text-center">
-                                        <a class="small" href="{{ route('register') }}">Créer un compte</a>
-                                    </div>
-                                @endif
+                                <div class="text-center mt-4">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle"></i> 
+                                        Contactez un super administrateur pour obtenir vos identifiants.
+                                    </small>
+                                </div>
                             </div>
                         </div>
                     </div>

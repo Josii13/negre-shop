@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class PageHomeContent extends Model
 {
     protected $fillable = [
+        'hero_image',
         'hero_title',
-        'hero_subtitle',
-        'hero_description',
-        'hero_cta_text',
-        'hero_cta_link',
+        'hero_paragraph_1',
+        'hero_paragraph_2',
+        'hero_paragraph_3',
         'about_title',
         'about_description',
         'about_image',

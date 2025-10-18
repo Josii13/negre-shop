@@ -7,11 +7,11 @@
  * et l'affichage des modales de confirmation
  */
 
-// Configuration EmailJS (sera remplacée par les valeurs du .env si disponibles)
+// Configuration EmailJS (à configurer depuis le backend Laravel)
 let EMAIL_CONFIG = {
-    publicKey: '2j_2TpjW4-LkHHqA5',      
-    serviceId: 'service_atkfepu',      
-    templateId: 'template_nrtko5u'     
+    publicKey: '',      
+    serviceId: '',      
+    templateId: ''     
 };
 
 // Fonction pour mettre à jour la configuration depuis le serveur

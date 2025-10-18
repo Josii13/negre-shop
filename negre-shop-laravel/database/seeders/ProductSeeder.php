@@ -15,7 +15,6 @@ class ProductSeeder extends Seeder
     {
         $peinture = Category::where('slug', 'peinture')->first();
         $design = Category::where('slug', 'design')->first();
-        $marque = Category::where('slug', 'marques')->first();
 
         // Produits Peinture
         $peintureProducts = [
@@ -93,37 +92,7 @@ class ProductSeeder extends Seeder
             Product::create(array_merge($product, ['category_id' => $design->id]));
         }
 
-        // Produits Marque
-        $marqueProducts = [
-            [
-                'name' => 'T-shirt Signature',
-                'slug' => 't-shirt-signature',
-                'description' => 'T-shirt premium au coupe minimaliste, réalisé dans un coton bio de haute qualité. Le logo discret incarne l\'essence de la marque : raffinement et simplicité.',
-                'price' => 45000,
-                'materials' => 'Coton bio 100% - 240 g/m²',
-                'sizes' => 'XS, S, M, L, XL',
-                'style' => 'Minimaliste - Streetwear élégant',
-                'collection' => 'Signature 2024',
-                'image' => 'img1.jpg',
-                'order' => 1,
-            ],
-            [
-                'name' => 'Pull Oversized',
-                'slug' => 'pull-oversized',
-                'description' => 'Pull oversized au design épuré, alliant confort et élégance. La coupe contemporaine et les finitions soignées en font une pièce intemporelle.',
-                'price' => 85000,
-                'materials' => 'Laine mérinos et coton',
-                'sizes' => 'S, M, L, XL',
-                'style' => 'Oversized - Contemporain',
-                'collection' => 'Signature 2024',
-                'image' => 'img1.jpg',
-                'order' => 2,
-            ],
-        ];
-
-        foreach ($marqueProducts as $product) {
-            Product::create(array_merge($product, ['category_id' => $marque->id]));
-        }
+        // Note: Les produits Marque sont gérés par MarqueProductsSeeder
     }
 }
 

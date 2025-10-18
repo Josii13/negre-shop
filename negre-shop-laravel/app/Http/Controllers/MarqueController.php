@@ -26,7 +26,10 @@ class MarqueController extends Controller
         // Récupérer le contenu dynamique de la page
         $pageContent = PageMarquesContent::first();
 
-        return view('marques', compact('category', 'products', 'pageContent'));
+        // Numéro WhatsApp depuis le .env
+        $whatsappNumber = env('WHATSAPP_NUMBER', '2250769465904');
+
+        return view('marques', compact('category', 'products', 'pageContent', 'whatsappNumber'));
     }
 }
 

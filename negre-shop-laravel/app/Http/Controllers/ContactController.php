@@ -47,7 +47,18 @@ class ContactController extends Controller
             ]
         );
 
-        return back()->with('success', 'Merci pour votre message ! Nous vous contacterons bientôt.');
+        $successMessage = 'Merci pour votre message ! Nous vous contacterons bientôt.';
+
+        // Retourner une réponse JSON pour les requêtes AJAX
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $successMessage,
+                'contact_name' => $validated['name'],
+            ]);
+        }
+
+        return back()->with('success', $successMessage);
     }
 }
 

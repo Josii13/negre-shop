@@ -13,10 +13,26 @@ class AuthenticatedSessionController extends Controller
 {
     /**
      * Display the login view.
+     * Empêche l'accès direct - redirige vers l'accueil si pas d'URL intended
      */
-    public function create(): View
+    public function create(Request $request): View|RedirectResponse
     {
-        return view('auth.login');
+        // Si l'utilisateur est déjà connecté, rediriger vers le dashboard
+        if (Auth::check()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Vérifier si l'utilisateur vient d'une tentative d'accès à une page protégée
+        // Laravel stocke l'URL intended dans la session
+        $intended = $request->session()->get('url.intended');
+        
+        // Si pas d'URL intended, c'est un accès direct à /login
+        // Rediriger vers la page d'accueil
+        if (!$intended) {
+            return redirect('/')->with('error', 'Accès restreint. Veuillez accéder au dashboard pour vous connecter.');
+        }
+
+        return view('admin.auth.login');
     }
 
     /**
@@ -42,6 +58,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login')->with('status', 'Vous avez été déconnecté avec succès.');
     }
 }

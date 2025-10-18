@@ -17,22 +17,6 @@
             <div class="contact-form">
                 <h2>Envoyez-moi un message</h2>
                 
-                @if(session('success'))
-                <div class="alert alert-success" style="padding: 1rem; margin-bottom: 1.5rem; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px;">
-                    {{ session('success') }}
-                </div>
-                @endif
-
-                @if($errors->any())
-                <div class="alert alert-danger" style="padding: 1rem; margin-bottom: 1.5rem; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px;">
-                    <ul style="margin: 0; padding-left: 1.5rem;">
-                        @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
                 <form action="{{ route('contact.store') }}" method="POST" id="contactForm">
                     @csrf
                     <div class="form-group">
@@ -79,4 +63,42 @@
         </div>
     </section>
 @endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contactForm');
+    
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Fonction pour préparer les données email
+            const prepareEmailData = (formData, serverData) => ({
+                to_email: '{{ env('CONTACT_EMAIL', 'fredericnda.ci@gmail.com') }}',
+                to_name: 'Frederic N\'DA',
+                from_name: formData.get('name'),
+                from_email: formData.get('email'),
+                from_phone: formData.get('phone'),
+                message: formData.get('message')
+            });
+
+            // Utiliser le gestionnaire global
+            handleFormSubmit(contactForm, prepareEmailData, {
+                showLoadingModal: true,
+                showSuccessModal: true,
+                sendEmail: true,
+                reloadOnSuccess: false,
+                successTitle: 'Message envoyé !',
+                successMessage: 'Merci pour votre message !',
+                successSubMessage: 'Nous vous contacterons bientôt.',
+                loadingTitle: 'Envoi en cours...',
+                loadingMessage: 'Veuillez patienter pendant que nous traitons votre message.'
+            });
+        });
+    }
+});
+</script>
+@endsection
+
 

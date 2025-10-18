@@ -31,22 +31,14 @@ class CategorySeeder extends Seeder
                 'order' => 2,
                 'is_active' => true,
             ],
-            [
-                'name' => 'Marque',
-                'slug' => 'marques',
-                'description' => 'Découvrez ma collection de vêtements',
-                'banner_title' => 'Marque',
-                'banner_description' => 'Streetwear réinventé - où le minimalisme rencontre l\'élégance pour créer une expression universelle de la contemporanéité.',
-                'order' => 3,
-                'is_active' => true,
-            ],
+            // Note: La catégorie Marque est gérée par MarqueCategorySeeder
             [
                 'name' => 'Gallery',
                 'slug' => 'gallery',
                 'description' => 'NÈGRE Workshop - Espace créatif',
                 'banner_title' => 'NÈGRE Workshop Gallery',
                 'banner_description' => 'Un espace inspirant dédié à la création artistique, aux événements et aux échanges culturels.',
-                'order' => 4,
+                'order' => 3,
                 'is_active' => true,
             ],
         ];

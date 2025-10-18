@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin\ActivityController as AdminActivityController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CarouselController;
 use App\Http\Controllers\Admin\PageContentController;
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -96,14 +98,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Users
     Route::resource('users', UserController::class);
     
-    // Profile & Settings
-    Route::get('/profile', function () {
-        return view('admin.profile');
-    })->name('profile');
+    // Contacts (Messages)
+    Route::resource('contacts', AdminContactController::class)->only(['index', 'show', 'destroy']);
     
-    Route::get('/settings', function () {
-        return view('admin.settings');
-    })->name('settings');
+    // Profile (Change Password)
+    Route::get('/profile/change-password', [AdminProfileController::class, 'changePassword'])->name('profile.change-password');
+    Route::put('/profile/update-password', [AdminProfileController::class, 'updatePassword'])->name('profile.update-password');
 });
 
 /*
@@ -123,7 +123,4 @@ Route::middleware(['auth', 'super_admin'])->prefix('admin/developer')->name('adm
     Route::put('/page-contents/{page}', [PageContentController::class, 'update'])->name('page-contents.update');
     
     // Site Settings
-    Route::get('/site-settings', function () {
-        return view('admin.developer.site-settings');
-    })->name('site-settings');
 });

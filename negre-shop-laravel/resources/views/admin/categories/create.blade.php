@@ -17,7 +17,7 @@
         <h6 class="m-0 font-weight-bold text-primary">Informations de la Catégorie</h6>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.categories.store') }}" method="POST">
+        <form id="createCategoryForm" action="{{ route('admin.categories.store') }}" method="POST">
             @csrf
             
             <div class="row">
@@ -68,5 +68,41 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Modale de chargement lors de la soumission du formulaire
+    $('#createCategoryForm').on('submit', function(e) {
+        Swal.fire({
+            title: 'Création en cours...',
+            html: 'Veuillez patienter pendant que nous créons la catégorie.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    });
+
+    // Afficher les erreurs de validation
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreurs de validation',
+            html: '<div class="text-left"><ul style="list-style-position: inside;">' +
+                @foreach($errors->all() as $error)
+                    '<li>{{ $error }}</li>' +
+                @endforeach
+                '</ul></div>',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#e74a3b',
+            width: '600px'
+        });
+    @endif
+});
+</script>
 @endsection
 

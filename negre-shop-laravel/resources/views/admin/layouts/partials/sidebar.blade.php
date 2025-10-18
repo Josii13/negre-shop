@@ -59,6 +59,20 @@
         </a>
     </li>
 
+    <!-- Nav Item - Messages -->
+    <li class="nav-item {{ request()->routeIs('admin.contacts.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.contacts.index') }}">
+            <i class="fas fa-fw fa-envelope"></i>
+            <span>Messages</span>
+            @php
+                $contactsCount = \App\Models\Contact::count();
+            @endphp
+            @if($contactsCount > 0)
+                <span class="badge badge-danger badge-counter ml-2">{{ $contactsCount > 9 ? '9+' : $contactsCount }}</span>
+            @endif
+        </a>
+    </li>
+
     <!-- Divider -->
     <hr class="sidebar-divider">
 
@@ -112,13 +126,6 @@
         </div>
     </li>
 
-    <!-- Nav Item - Site Settings -->
-    <li class="nav-item {{ request()->routeIs('admin.developer.site-settings') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('admin.developer.site-settings') }}">
-            <i class="fas fa-fw fa-cogs"></i>
-            <span>Paramètres du Site</span>
-        </a>
-    </li>
     @endif
 
     <!-- Divider -->

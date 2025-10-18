@@ -236,22 +236,35 @@
     <section class="hero">
         <div class="hero-content">
             <div class="hero-image">
-                <img src="{{ asset('images/img2.jpg') }}" alt="Frederic N'DA">
+                <img src="{{ asset('images/' . ($pageContent->hero_image ?? 'img2.jpg')) }}" alt="{{ $pageContent->hero_title ?? 'Frederic N\'DA' }}">
             </div>
             <div class="hero-text">
-                <h1>Frederic N'DA</h1>
-                <p>Artiste peintre et designer ivoirien, Frederic N'DA développe un univers artistique où la peinture
-                    contemporaine dialogue avec le design mobilier.</p>
-                <p>Son travail explore les formes, les textures et les couleurs, créant des pièces uniques qui
-                    transcendent les frontières entre l'art et le fonctionnel.</p>
-                <p>Basé à Cocody, Abidjan, il conçoit chaque œuvre comme une invitation à la contemplation et à la
-                    découverte.</p>
+                <h1>{{ $pageContent->hero_title ?? 'Frederic N\'DA' }}</h1>
+                @if($pageContent && $pageContent->hero_paragraph_1)
+                    <p>{{ $pageContent->hero_paragraph_1 }}</p>
+                @endif
+                @if($pageContent && $pageContent->hero_paragraph_2)
+                    <p>{{ $pageContent->hero_paragraph_2 }}</p>
+                @endif
+                @if($pageContent && $pageContent->hero_paragraph_3)
+                    <p>{{ $pageContent->hero_paragraph_3 }}</p>
+                @endif
             </div>
         </div>
 
         <div class="category-cards">
             @foreach($categories as $category)
-            <a href="{{ route($category->slug) }}" class="category-card">
+            @php
+                // Mapper les slugs de catégories aux noms de routes
+                $routeName = match($category->slug) {
+                    'peinture' => 'peinture',
+                    'design' => 'design',
+                    'marque' => 'marques',
+                    'gallery' => 'gallery',
+                    default => $category->slug
+                };
+            @endphp
+            <a href="{{ route($routeName) }}" class="category-card">
                 <img src="{{ asset('images/' . ($category->image ?? 'img1.jpg')) }}" alt="{{ $category->name }}">
                 <div class="category-overlay">
                     <h2>{{ $category->name }}</h2>

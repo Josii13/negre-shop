@@ -39,6 +39,8 @@ class DatabaseSeeder extends Seeder
             ActivitySeeder::class,
             SiteSettingSeeder::class,
             PageContentsSeeder::class,
+            MarqueCategorySeeder::class,
+            MarqueProductsSeeder::class,
         ]);
     }
 }

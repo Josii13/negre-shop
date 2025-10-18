@@ -10,21 +10,12 @@
     </a>
 </div>
 
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    <i class="fas fa-check-circle"></i> {{ session('success') }}
-    <button type="button" class="close" data-dismiss="alert">
-        <span>&times;</span>
-    </button>
-</div>
-@endif
-
 <div class="card shadow mb-4">
     <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Informations du Slide</h6>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.developer.carousel.update', $carousel) }}" method="POST" enctype="multipart/form-data">
+        <form id="editSlideForm" action="{{ route('admin.developer.carousel.update', $carousel) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             @include('admin.developer.carousel.form')
@@ -39,5 +30,65 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        // Afficher la modale de succès si présente
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Succès !',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#4e73df',
+                timer: 3000,
+                timerProgressBar: true
+            });
+        @endif
+
+        // Afficher la modale d'erreur si présente
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur !',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#e74a3b'
+            });
+        @endif
+
+        // Afficher les erreurs de validation avec SweetAlert2
+        @if($errors->any())
+            let errorList = '<ul style="text-align: left;">';
+            @foreach($errors->all() as $error)
+                errorList += '<li>{{ $error }}</li>';
+            @endforeach
+            errorList += '</ul>';
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreurs de validation',
+                html: errorList,
+                confirmButtonColor: '#e74a3b',
+                width: '600px'
+            });
+        @endif
+
+        // Modale de chargement lors de la soumission
+        $('#editSlideForm').on('submit', function() {
+            Swal.fire({
+                title: 'Mise à jour en cours...',
+                html: 'Veuillez patienter',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        });
+    });
+</script>
 @endsection
 

@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('page_home_contents', function (Blueprint $table) {
             $table->id();
-            // Hero Section
+            // Hero Section (Section avec image et texte en dessous du carousel)
+            $table->string('hero_image')->default('img2.jpg');
             $table->string('hero_title')->default('Frederic N\'DA');
-            $table->string('hero_subtitle')->default('Artiste Peintre & Designer');
-            $table->text('hero_description')->nullable();
-            $table->string('hero_cta_text')->default('Découvrir');
-            $table->string('hero_cta_link')->default('#');
+            $table->text('hero_paragraph_1')->nullable();
+            $table->text('hero_paragraph_2')->nullable();
+            $table->text('hero_paragraph_3')->nullable();
             
             // About Section
             $table->string('about_title')->default('À Propos');

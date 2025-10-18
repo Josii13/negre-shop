@@ -49,4 +49,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Relation avec les commandes (basée sur l'email)
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'customer_email', 'email');
+    }
 }

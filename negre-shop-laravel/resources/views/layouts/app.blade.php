@@ -12,8 +12,11 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-        <!-- Public CSS -->
-        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        <!-- Public CSS - Charger le CSS original (backup) qui fonctionne -->
+        <link rel="stylesheet" href="{{ asset('css/style-backup.css') }}">
+        
+        <!-- SweetAlert2 -->
+        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
         
         <style>
             /* Admin Navigation Override (si connecté) */
@@ -70,30 +73,29 @@
 
         @yield('styles')
     </head>
-    <body>
-        @auth
-            @include('layouts.navigation')
-        @else
+    <body class="public-site">
+        <div id="public-wrapper">
+            {{-- Toujours utiliser la navigation publique sur les pages publiques --}}
             @include('layouts.public-navigation')
-        @endauth
 
-        <!-- Page Heading -->
-        @isset($header)
-            <header class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    {{ $header }}
-                </div>
-            </header>
-        @endisset
+            <!-- Page Heading -->
+            @isset($header)
+                <header class="bg-white shadow">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        {{ $header }}
+                    </div>
+                </header>
+            @endisset
 
-        <!-- Page Content -->
-        <main>
-            @yield('content')
-        </main>
+            <!-- Page Content -->
+            <main>
+                @yield('content')
+            </main>
 
-        @guest
-            @include('layouts.footer')
-        @endguest
+            @guest
+                @include('layouts.footer')
+            @endguest
+        </div>
 
         <!-- Mobile menu toggle script -->
         <script>
@@ -107,9 +109,205 @@
             }
         </script>
 
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <!-- EmailJS SDK -->
+        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
         <!-- Public JS -->
-        <script src="{{ asset('js/script.js') }}"></script>
         <script src="{{ asset('js/emailjs-handler.js') }}"></script>
+        
+        <!-- Configuration EmailJS depuis .env -->
+        <script>
+            // Configurer EmailJS avec les valeurs du .env Laravel
+            if (typeof setEmailJSConfig === 'function') {
+                setEmailJSConfig({
+                    publicKey: '{{ env('EMAILJS_PUBLIC_KEY', '2j_2TpjW4-LkHHqA5') }}',
+                    serviceId: '{{ env('EMAILJS_SERVICE_ID', 'service_atkfepu') }}',
+                    templateId: '{{ env('EMAILJS_TEMPLATE_ID', 'template_nrtko5u') }}'
+                });
+            }
+        </script>
+        
+        <!-- Global Form Handler with Modals -->
+        <script>
+            // Afficher les messages flash de Laravel avec SweetAlert2
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Succès !',
+                    text: '{{ session('success') }}',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#000000',
+                    timer: 4000,
+                    timerProgressBar: true
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur !',
+                    text: '{{ session('error') }}',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#e74a3b'
+                });
+            @endif
+
+            @if($errors->any())
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreurs de validation',
+                    html: '<div style="text-align: left;"><ul style="list-style-position: inside;">' +
+                        @foreach($errors->all() as $error)
+                            '<li>{{ $error }}</li>' +
+                        @endforeach
+                        '</ul></div>',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#e74a3b',
+                    width: '600px'
+                });
+            @endif
+
+            /**
+             * Gestionnaire global pour les formulaires avec modales
+             * @param {HTMLFormElement} form - Le formulaire à soumettre
+             * @param {Function} prepareEmailData - Fonction pour préparer les données email (optionnel)
+             * @param {Object} options - Options de configuration
+             */
+            function handleFormSubmit(form, prepareEmailData = null, options = {}) {
+                const defaults = {
+                    showLoadingModal: true,
+                    showSuccessModal: true,
+                    sendEmail: false,
+                    reloadOnSuccess: false,
+                    reloadDelay: 2000,
+                    successTitle: 'Succès !',
+                    successMessage: 'Votre demande a été envoyée avec succès.',
+                    successSubMessage: null,
+                    loadingTitle: 'Envoi en cours...',
+                    loadingMessage: 'Veuillez patienter.'
+                };
+
+                const config = { ...defaults, ...options };
+                const formData = new FormData(form);
+                const submitBtn = form.querySelector('button[type="submit"]');
+                
+                // Afficher la modale de chargement
+                if (config.showLoadingModal) {
+                    Swal.fire({
+                        title: config.loadingTitle,
+                        html: config.loadingMessage,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                }
+
+                // Désactiver le bouton de soumission
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                }
+
+                // Soumettre le formulaire via AJAX
+                return fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw data;
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Succès
+                    if (config.showSuccessModal) {
+                        let htmlContent = config.successMessage;
+                        if (config.successSubMessage) {
+                            htmlContent += '<br><small style="color: #666; margin-top: 1rem; display: block;">' + config.successSubMessage + '</small>';
+                        }
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: config.successTitle,
+                            html: htmlContent,
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#000000',
+                            timer: config.reloadOnSuccess ? config.reloadDelay : null,
+                            timerProgressBar: config.reloadOnSuccess
+                        }).then(() => {
+                            if (config.reloadOnSuccess) {
+                                window.location.reload();
+                            }
+                        });
+                    }
+
+                    // Envoyer l'email si configuré
+                    if (config.sendEmail && prepareEmailData && typeof emailjs !== 'undefined') {
+                        const emailData = prepareEmailData(formData, data);
+                        const serviceId = '{{ env('EMAILJS_SERVICE_ID', 'service_atkfepu') }}';
+                        const templateId = '{{ env('EMAILJS_TEMPLATE_ID', 'template_nrtko5u') }}';
+                        
+                        emailjs.send(serviceId, templateId, emailData)
+                            .then((response) => {
+                                console.log('Email envoyé avec succès:', response);
+                            })
+                            .catch(err => {
+                                console.error('Erreur lors de l\'envoi de l\'email:', err);
+                                // Ne pas bloquer le succès de l'opération principale
+                            });
+                    }
+
+                    // Réinitialiser le formulaire
+                    form.reset();
+                    
+                    return data;
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    
+                    let errorMessage = 'Une erreur est survenue lors de l\'envoi.';
+                    if (error.message) {
+                        errorMessage = error.message;
+                    } else if (error.errors) {
+                        errorMessage = '<ul style="list-style-position: inside; text-align: left;">';
+                        Object.values(error.errors).forEach(msgs => {
+                            msgs.forEach(msg => {
+                                errorMessage += '<li>' + msg + '</li>';
+                            });
+                        });
+                        errorMessage += '</ul>';
+                    }
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        html: errorMessage,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#e74a3b'
+                    });
+
+                    throw error;
+                })
+                .finally(() => {
+                    // Réactiver le bouton
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+        </script>
 
         @yield('scripts')
     </body>

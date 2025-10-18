@@ -1,11 +1,11 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Nouvel Utilisateur')
+@section('title', 'Nouvel Administrateur')
 
 @section('content')
 <!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Nouvel Utilisateur</h1>
+    <h1 class="h3 mb-0 text-gray-800">Nouvel Administrateur</h1>
     <a href="{{ route('admin.users.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
         <i class="fas fa-arrow-left fa-sm text-white-50"></i> Retour
     </a>
@@ -17,7 +17,7 @@
         <h6 class="m-0 font-weight-bold text-primary">Informations de l'Utilisateur</h6>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.users.store') }}" method="POST">
+        <form action="{{ route('admin.users.store') }}" method="POST" id="createUserForm">
             @csrf
             
             <div class="row">
@@ -56,15 +56,13 @@
                         <label for="type">Type d'utilisateur <span class="text-danger">*</span></label>
                         <select class="form-control @error('type') is-invalid @enderror" 
                                 id="type" name="type" required>
-                            <option value="customer" {{ old('type') === 'customer' ? 'selected' : '' }}>Client</option>
-                            <option value="admin" {{ old('type') === 'admin' ? 'selected' : '' }}>Administrateur</option>
-                            @if(auth()->user()->type === 'super_admin')
-                                <option value="super_admin" {{ old('type') === 'super_admin' ? 'selected' : '' }}>Super Admin</option>
-                            @endif
+                            <option value="admin" {{ old('type', 'admin') === 'admin' ? 'selected' : '' }}>Administrateur</option>
+                            <option value="super_admin" {{ old('type') === 'super_admin' ? 'selected' : '' }}>Super Administrateur</option>
                         </select>
                         @error('type')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <small class="form-text text-muted">Les clients sont créés automatiquement lors des commandes.</small>
                     </div>
                 </div>
             </div>
@@ -82,5 +80,41 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Modale de chargement lors de la soumission
+    $('#createUserForm').on('submit', function(e) {
+        Swal.fire({
+            title: 'Création en cours...',
+            html: 'Veuillez patienter pendant la création de l\'administrateur.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    });
+
+    // Afficher les erreurs de validation
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreurs de validation',
+            html: '<div style="text-align: left;"><ul style="list-style-position: inside;">' +
+                @foreach($errors->all() as $error)
+                    '<li>{{ $error }}</li>' +
+                @endforeach
+                '</ul></div>',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#e74a3b',
+            width: '600px'
+        });
+    @endif
+});
+</script>
 @endsection
 

@@ -1,28 +1,28 @@
-{{-- Hero Section --}}
-<h5 class="text-primary">Section Hero</h5>
-<div class="form-row">
-    <div class="form-group col-md-6">
-        <label for="hero_title">Titre Principal</label>
-        <input type="text" class="form-control" id="hero_title" name="hero_title" value="{{ $content->hero_title ?? '' }}" required>
-    </div>
-    <div class="form-group col-md-6">
-        <label for="hero_subtitle">Sous-titre</label>
-        <input type="text" class="form-control" id="hero_subtitle" name="hero_subtitle" value="{{ $content->hero_subtitle ?? '' }}">
-    </div>
+{{-- Hero Section (Image + Texte en dessous du carousel) --}}
+<h5 class="text-primary">Section Hero (Image + Biographie)</h5>
+<div class="form-group">
+    <label for="hero_image">Image Hero</label>
+    <input type="text" class="form-control" id="hero_image" name="hero_image" value="{{ $content->hero_image ?? 'img2.jpg' }}">
+    <small class="form-text text-muted">Nom du fichier dans public/images/ (ex: img2.jpg)</small>
 </div>
 <div class="form-group">
-    <label for="hero_description">Description</label>
-    <textarea class="form-control" id="hero_description" name="hero_description" rows="3">{{ $content->hero_description ?? '' }}</textarea>
+    <label for="hero_title">Titre Principal</label>
+    <input type="text" class="form-control" id="hero_title" name="hero_title" value="{{ $content->hero_title ?? 'Frederic N\'DA' }}" required>
 </div>
-<div class="form-row">
-    <div class="form-group col-md-6">
-        <label for="hero_cta_text">Texte du Bouton</label>
-        <input type="text" class="form-control" id="hero_cta_text" name="hero_cta_text" value="{{ $content->hero_cta_text ?? '' }}">
-    </div>
-    <div class="form-group col-md-6">
-        <label for="hero_cta_link">Lien du Bouton</label>
-        <input type="text" class="form-control" id="hero_cta_link" name="hero_cta_link" value="{{ $content->hero_cta_link ?? '' }}">
-    </div>
+<div class="form-group">
+    <label for="hero_paragraph_1">Paragraphe 1</label>
+    <textarea class="form-control" id="hero_paragraph_1" name="hero_paragraph_1" rows="2">{{ $content->hero_paragraph_1 ?? '' }}</textarea>
+    <small class="form-text text-muted">Premier paragraphe de présentation</small>
+</div>
+<div class="form-group">
+    <label for="hero_paragraph_2">Paragraphe 2</label>
+    <textarea class="form-control" id="hero_paragraph_2" name="hero_paragraph_2" rows="2">{{ $content->hero_paragraph_2 ?? '' }}</textarea>
+    <small class="form-text text-muted">Deuxième paragraphe de présentation</small>
+</div>
+<div class="form-group">
+    <label for="hero_paragraph_3">Paragraphe 3</label>
+    <textarea class="form-control" id="hero_paragraph_3" name="hero_paragraph_3" rows="2">{{ $content->hero_paragraph_3 ?? '' }}</textarea>
+    <small class="form-text text-muted">Troisième paragraphe de présentation</small>
 </div>
 
 <hr class="my-4">
