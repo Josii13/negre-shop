@@ -118,14 +118,18 @@
         <!-- Public JS -->
         <script src="{{ asset('js/emailjs-handler.js') }}"></script>
         
-        <!-- Configuration EmailJS depuis .env -->
+        <!-- Configuration EmailJS et Admin depuis .env -->
         <script>
             // Configurer EmailJS avec les valeurs du .env Laravel
             if (typeof setEmailJSConfig === 'function') {
-                setEmailJSConfig({
-                    publicKey: '{{ env('EMAILJS_PUBLIC_KEY', '2j_2TpjW4-LkHHqA5') }}',
-                    serviceId: '{{ env('EMAILJS_SERVICE_ID', 'service_atkfepu') }}',
-                    templateId: '{{ env('EMAILJS_TEMPLATE_ID', 'template_nrtko5u') }}'
+                setEmailJSConfig(@json($emailjsConfig));
+            }
+            
+            // Configurer les informations admin
+            if (typeof setAdminConfig === 'function') {
+                setAdminConfig({
+                    email: '{{ $adminEmail }}',
+                    name: '{{ $adminName }}'
                 });
             }
         </script>

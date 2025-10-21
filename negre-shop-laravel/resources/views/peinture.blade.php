@@ -260,7 +260,7 @@
             @forelse($products as $product)
             <div class="product-card" data-product-id="{{ $product->id }}">
                 <div class="product-image">
-                    <img src="{{ asset('images/' . ($product->image ?? 'img1.jpg')) }}" alt="{{ $product->name }}">
+                    <img src="{{ asset($product->image ? 'storage/' . $product->image : 'storage/images/img1.jpg') }}" alt="{{ $product->name }}">
                     <div class="view-eye" onclick="openDetailModal({{ $loop->index }})">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -282,73 +282,26 @@
         </div>
     </section>
 
-    <!-- Modal de détails -->
-    <div id="detailModal" class="detail-modal">
-        <div class="detail-modal-content">
-            <button class="detail-close" onclick="closeDetailModal()">✕</button>
-            <div class="detail-image-container">
-                <img id="detailImage" src="" alt="">
-            </div>
-            <div class="detail-info-container">
-                <div>
-                    <h2 class="detail-title" id="detailTitle"></h2>
-                    <div class="detail-price" id="detailPrice"></div>
-                    <div class="detail-description">
-                        <p id="detailDescription"></p>
-                    </div>
-                    <div class="detail-characteristics">
-                        <h4>Caractéristiques</h4>
-                        <div class="characteristic-item">
-                            <span class="characteristic-label">Dimensions</span>
-                            <span class="characteristic-value" id="detailDimensions"></span>
-                        </div>
-                        <div class="characteristic-item">
-                            <span class="characteristic-label">Technique</span>
-                            <span class="characteristic-value" id="detailTechnique"></span>
-                        </div>
-                        <div class="characteristic-item">
-                            <span class="characteristic-label">Support</span>
-                            <span class="characteristic-value" id="detailSupport"></span>
-                        </div>
-                        <div class="characteristic-item">
-                            <span class="characteristic-label">Année</span>
-                            <span class="characteristic-value" id="detailYear"></span>
-                        </div>
-                    </div>
-                </div>
-                <button class="product-btn" onclick="orderFromDetail()">Commander cette œuvre</button>
-            </div>
-        </div>
-    </div>
+    <!-- Modales (utilisation des partials dynamiques) -->
+    @include('partials.modals.detail-modal', [
+        'modalId' => 'detailModal',
+        'imageId' => 'detailImage',
+        'titleId' => 'detailTitle',
+        'priceId' => 'detailPrice',
+        'descriptionId' => 'detailDescription',
+        'characteristics' => [
+            ['label' => 'Dimensions', 'id' => 'detailDimensions'],
+            ['label' => 'Technique', 'id' => 'detailTechnique'],
+            ['label' => 'Support', 'id' => 'detailSupport'],
+            ['label' => 'Année', 'id' => 'detailYear']
+        ]
+    ])
 
-    <!-- Modal de commande -->
-    <div id="orderModal" class="order-modal">
-        <div class="order-modal-content">
-            <button class="detail-close" onclick="closeOrderModal()">✕</button>
-            <h2>Commander</h2>
-            <form id="orderForm" action="{{ route('order.store') }}" method="POST">
-                @csrf
-                <input type="hidden" id="product_id" name="product_id">
-                <div class="form-group">
-                    <label for="customer_name">Nom</label>
-                    <input type="text" id="customer_name" name="customer_name" required>
-                </div>
-                <div class="form-group">
-                    <label for="customer_email">Email</label>
-                    <input type="email" id="customer_email" name="customer_email" required>
-                </div>
-                <div class="form-group">
-                    <label for="customer_phone">Téléphone</label>
-                    <input type="tel" id="customer_phone" name="customer_phone" required>
-                </div>
-                <div class="form-group">
-                    <label for="message">Message</label>
-                    <textarea id="message" name="message" readonly></textarea>
-                </div>
-                <button type="submit" class="submit-btn" id="submitBtn">Envoyer</button>
-            </form>
-        </div>
-    </div>
+    @include('partials.modals.order-modal', [
+        'modalId' => 'orderModal',
+        'formId' => 'orderForm',
+        'formAction' => route('order.store')
+    ])
 @endsection
 
 @section('scripts')
@@ -378,7 +331,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        detailImage.src = '/images/' + (currentProductPeinture.image || 'img1.jpg');
+        // Construire le chemin correct de l'image
+        const imagePath = currentProductPeinture.image 
+            ? '/storage/' + currentProductPeinture.image 
+            : '/images/img1.jpg';
+        detailImage.src = imagePath;
+        
         detailTitle.textContent = currentProductPeinture.name;
         detailPrice.textContent = currentProductPeinture.formatted_price || '';
         detailDescription.textContent = currentProductPeinture.description || '';
@@ -442,7 +400,7 @@ document.addEventListener('DOMContentLoaded', function() {
         orderForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Fonction pour préparer les données email
+            // Fonction pour préparer les données email client
             const prepareEmailData = (formData, serverData) => ({
                 to_email: formData.get('customer_email'),
                 to_name: formData.get('customer_name'),
@@ -452,10 +410,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 message: formData.get('message')
             });
 
-            // Utiliser le gestionnaire global
+            // Fonction pour préparer les données email admin
+            const prepareAdminEmailData = (formData, serverData) => ({
+                to_email: '{{ $adminEmail }}',
+                to_name: '{{ $adminName }}',
+                customer_name: formData.get('customer_name'),
+                customer_email: formData.get('customer_email'),
+                customer_phone: formData.get('customer_phone'),
+                product_name: serverData.product_name,
+                product_price: serverData.product_price,
+                message: formData.get('message'),
+                order_date: new Date().toLocaleDateString('fr-FR', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                })
+            });
+
+            // Utiliser le gestionnaire global avec double envoi d'email
             handleFormSubmit(orderForm, prepareEmailData, {
                 showSuccessModal: true,
                 sendEmail: true,
+                prepareAdminEmailData: prepareAdminEmailData,
                 reloadOnSuccess: true,
                 reloadDelay: 3000,
                 successMessage: 'Votre commande a été prise en compte avec succès.',

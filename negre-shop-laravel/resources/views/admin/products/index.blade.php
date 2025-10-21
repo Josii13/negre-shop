@@ -11,12 +11,88 @@
     </a>
 </div>
 
-<!-- DataTales -->
+<!-- Filtres et Tri -->
 <div class="card shadow mb-4">
     <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Liste des Produits</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Filtres et Tri</h6>
     </div>
     <div class="card-body">
+        <form method="GET" action="{{ route('admin.products.index') }}" class="row align-items-end">
+            <div class="col-md-3">
+                <label for="category" class="form-label">Catégorie</label>
+                <select name="category" id="category" class="form-control">
+                    <option value="">Toutes les catégories</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="status" class="form-label">Statut</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="">Tous les statuts</option>
+                    <option value="available" {{ request('status') === 'available' ? 'selected' : '' }}>Disponibles</option>
+                    <option value="unavailable" {{ request('status') === 'unavailable' ? 'selected' : '' }}>Indisponibles</option>
+                    <option value="featured" {{ request('status') === 'featured' ? 'selected' : '' }}>En vedette</option>
+                </select>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="sort" class="form-label">Trier par</label>
+                <select name="sort" id="sort" class="form-control">
+                    <option value="latest" {{ request('sort') === 'latest' ? 'selected' : '' }}>Plus récents</option>
+                    <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Nom (A-Z)</option>
+                    <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Prix (croissant)</option>
+                    <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Prix (décroissant)</option>
+                </select>
+            </div>
+            
+            <div class="col-md-3">
+                <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Réinitialiser
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- DataTales -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Liste des Produits</h6>
+        <div class="text-muted small">
+            @if(request()->hasAny(['category', 'status', 'sort']))
+                <span class="badge badge-info">
+                    {{ $products->total() }} produit(s) trouvé(s)
+                </span>
+            @else
+                <span class="badge badge-secondary">
+                    {{ $products->total() }} produit(s) au total
+                </span>
+            @endif
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Boutons de tri rapide par catégorie -->
+        <div class="mb-3">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="text-muted small">Tri rapide :</span>
+                <a href="{{ route('admin.products.index') }}" 
+                   class="btn btn-sm {{ !request('category') ? 'btn-primary' : 'btn-outline-primary' }}">
+                    Tous
+                </a>
+                @foreach($categories as $category)
+                    <a href="{{ route('admin.products.index', ['category' => $category->id]) }}" 
+                       class="btn btn-sm {{ request('category') == $category->id ? 'btn-primary' : 'btn-outline-primary' }}">
+                        {{ $category->name }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+        
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
@@ -25,7 +101,7 @@
                         <th>Nom</th>
                         <th>Catégorie</th>
                         <th>Prix</th>
-                        <th>Disponible</th>
+                        <th>Statut</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -45,20 +121,25 @@
                             </td>
                             <td>{{ number_format($product->price, 0, ',', ' ') }} FCFA</td>
                             <td>
+                                @if($product->is_featured)
+                                    <span class="badge badge-warning mb-1">
+                                        <i class="fas fa-star"></i> Vedette
+                                    </span><br>
+                                @endif
                                 @if($product->is_available)
-                                    <span class="badge badge-success">Oui</span>
+                                    <span class="badge badge-success">Disponible</span>
                                 @else
-                                    <span class="badge badge-secondary">Non</span>
+                                    <span class="badge badge-secondary">Indisponible</span>
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-warning">
+                                <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-warning" title="Modifier">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="delete-form" style="display: inline-block;" data-product-name="{{ $product->name }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" class="btn btn-sm btn-danger btn-delete">
+                                    <button type="button" class="btn btn-sm btn-danger btn-delete" title="Supprimer">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -84,6 +165,10 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    // Filtrage automatique lors du changement des sélecteurs
+    $('#category, #status, #sort').on('change', function() {
+        $(this).closest('form').submit();
+    });
     // Afficher les messages de succès
     @if(session('success'))
         Swal.fire({

@@ -103,11 +103,130 @@
                     </div>
 
                     <div class="form-group">
-                        <div class="custom-control custom-checkbox">
+                        <div class="custom-control custom-checkbox mb-2">
                             <input type="checkbox" class="custom-control-input" id="is_available" name="is_available" value="1"
-                                   {{ old('is_available', $product->is_available ? 1 : 0) ? 'checked' : '' }}>
+                                   {{ old('is_available', $product->is_available) ? 'checked' : '' }}>
                             <label class="custom-control-label" for="is_available">Disponible à la vente</label>
                         </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="is_featured" name="is_featured" value="1"
+                                   {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}>
+                            <label class="custom-control-label" for="is_featured">Produit en vedette</label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <hr>
+            
+            <h5 class="mb-3 text-primary">Caractéristiques spécifiques</h5>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="dimensions">Dimensions</label>
+                        <div class="input-group">
+                            <input type="number" min="0" class="form-control @error('dimensions') is-invalid @enderror"
+                                id="dimension_length" placeholder="Longueur" style="max-width: 90px;">
+                            <div class="input-group-prepend input-group-append">
+                                <span class="input-group-text" style="font-weight:bold;">x</span>
+                            </div>
+                            <input type="number" min="0" class="form-control @error('dimensions') is-invalid @enderror"
+                                id="dimension_width" placeholder="Largeur" style="max-width: 90px;">
+                            <div class="input-group-append">
+                                <select id="dimension_unit" class="form-control" style="max-width: 80px;">
+                                    <option value="cm">cm</option>
+                                    <option value="m">m</option>
+                                </select>
+                            </div>
+                            <input type="hidden"
+                                name="dimensions"
+                                id="dimensions"
+                                value="{{ old('dimensions', $product->dimensions) }}">
+                        </div>
+                        
+                        @error('dimensions')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-text text-muted">Pour peintures et design</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="technique">Technique</label>
+                        <input type="text" class="form-control @error('technique') is-invalid @enderror" 
+                               id="technique" name="technique" value="{{ old('technique', $product->technique) }}"
+                               placeholder="Ex: Acrylique, Huile">
+                        @error('technique')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-text text-muted">Pour peintures</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="support">Support</label>
+                        <input type="text" class="form-control @error('support') is-invalid @enderror" 
+                               id="support" name="support" value="{{ old('support', $product->support) }}"
+                               placeholder="Ex: Toile, Bois, Papier">
+                        @error('support')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-text text-muted">Pour peintures</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="materials">Matériaux</label>
+                        <input type="text" class="form-control @error('materials') is-invalid @enderror" 
+                               id="materials" name="materials" value="{{ old('materials', $product->materials) }}"
+                               placeholder="Ex: Coton, Polyester">
+                        @error('materials')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-text text-muted">Pour design et marque</small>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="style">Style</label>
+                        <input type="text" class="form-control @error('style') is-invalid @enderror" 
+                               id="style" name="style" value="{{ old('style', $product->style) }}"
+                               placeholder="Ex: Contemporain, Moderne">
+                        @error('style')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="collection">Collection</label>
+                        <input type="text" class="form-control @error('collection') is-invalid @enderror" 
+                               id="collection" name="collection" value="{{ old('collection', $product->collection) }}"
+                               placeholder="Ex: Collection Printemps 2025">
+                        @error('collection')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-text text-muted">Pour marque</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sizes">Tailles disponibles</label>
+                        <input type="text" class="form-control @error('sizes') is-invalid @enderror" 
+                               id="sizes" name="sizes" value="{{ old('sizes', $product->sizes) }}"
+                               placeholder="Ex: S, M, L, XL">
+                        @error('sizes')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-text text-muted">Pour marque (vêtements)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="year">Année</label>
+                        <input type="text" class="form-control @error('year') is-invalid @enderror" 
+                               id="year" name="year" value="{{ old('year', $product->year) }}"
+                               placeholder="Ex: 2025">
+                        @error('year')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -182,6 +301,39 @@ $(document).ready(function() {
         });
     @endif
 });
+</script>
+
+<!-- Dimensions Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function updateDimensionsField() {
+            const length = document.getElementById('dimension_length').value;
+            const width = document.getElementById('dimension_width').value;
+            const unit = document.getElementById('dimension_unit').value;
+            let dim = '';
+            if (length && width) {
+                dim = length + 'x' + width + ' ' + unit;
+            }
+            document.getElementById('dimensions').value = dim;
+        }
+
+        // Pré-remplissage si old('dimensions') ou $product->dimensions existe (format attendu: 100x80 cm)
+        @if(old('dimensions') || $product->dimensions)
+            (function () {
+                let dimensionsValue = `{{ old('dimensions', $product->dimensions) }}`;
+                let match = dimensionsValue.match(/^(\d+)\s*x\s*(\d+)\s*(cm|m)?$/i);
+                if (match) {
+                    document.getElementById('dimension_length').value = match[1];
+                    document.getElementById('dimension_width').value = match[2];
+                    if (match[3]) document.getElementById('dimension_unit').value = match[3];
+                }
+            })();
+        @endif
+
+        document.getElementById('dimension_length').addEventListener('input', updateDimensionsField);
+        document.getElementById('dimension_width').addEventListener('input', updateDimensionsField);
+        document.getElementById('dimension_unit').addEventListener('change', updateDimensionsField);
+    });
 </script>
 @endsection
 

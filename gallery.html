@@ -885,10 +885,10 @@
             document.getElementById('modalAudience').textContent = currentActivity.audience;
             
             // Configurer le lien WhatsApp
-            const phoneNumber = "2250700000000"; // À remplacer par le vrai numéro
+            const whatsappNumber = "2250769465904"; // Numéro WhatsApp depuis .env
             const message = `Bonjour, je souhaite réserver : ${currentActivity.title}`;
             const encodedMessage = encodeURIComponent(message);
-            document.getElementById('modalWhatsapp').href = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            document.getElementById('modalWhatsapp').href = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
             
             document.getElementById('activityModal').classList.add('active');
             document.body.style.overflow = 'hidden';

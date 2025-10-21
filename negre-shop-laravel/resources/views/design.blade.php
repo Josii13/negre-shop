@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Design Mobilier - Frederic N\'DA')
+@section('title', $pageContent->meta_title ?? 'Design Mobilier - Frederic N\'DA')
 
 @section('styles')
 <style>
@@ -326,8 +326,8 @@
     <!-- Page Banner -->
     <section class="page-banner">
         <div class="banner-content">
-            <h1>{{ $category->banner_title ?? $category->name }}</h1>
-            <p>{{ $category->banner_description ?? $category->description }}</p>
+            <h1>{{ $pageContent->banner_title ?? $category->name }}</h1>
+            <p>{{ $pageContent->banner_description ?? $category->description }}</p>
         </div>
     </section>
 
@@ -337,7 +337,7 @@
             @forelse($products as $product)
             <div class="product-card">
                 <div class="product-image">
-                    <img src="{{ asset('images/' . ($product->image ?? 'img1.jpg')) }}" alt="{{ $product->name }}">
+                    <img src="{{ asset($product->image ? 'storage/' . $product->image : 'images/img1.jpg') }}" alt="{{ $product->name }}">
                     <div class="view-eye" onclick="openDetailModal({{ $loop->index }})">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -438,7 +438,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.openDetailModal = function(index) {
         currentProductDesign = products[index];
-        document.getElementById('detailImage').src = '/images/' + (currentProductDesign.image || 'img1.jpg');
+        const imagePath = currentProductDesign.image ? '/storage/' + currentProductDesign.image : '/images/img1.jpg';
+        document.getElementById('detailImage').src = imagePath;
         document.getElementById('detailTitle').textContent = currentProductDesign.name;
         document.getElementById('detailPrice').textContent = currentProductDesign.formatted_price || '';
         document.getElementById('detailDescription').textContent = currentProductDesign.description || '';

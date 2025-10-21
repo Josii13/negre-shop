@@ -20,6 +20,7 @@ class PageContentController extends Controller
             'gallery' => 'Page Gallery',
             'contact' => 'Page Contact',
             'marques' => 'Page Marques',
+            'modals' => 'Modales (Textes Communs)',
         ];
 
         return view('admin.developer.page-contents.index', compact('pages'));
@@ -30,14 +31,19 @@ class PageContentController extends Controller
      */
     public function edit($page)
     {
-        $validPages = ['home', 'peinture', 'design', 'gallery', 'contact', 'marques'];
+        $validPages = ['home', 'peinture', 'design', 'gallery', 'contact', 'marques', 'modals'];
 
         if (!in_array($page, $validPages)) {
             abort(404, 'Page introuvable');
         }
 
-        // Récupérer le contenu de la page
-        $content = DB::table('page_' . $page . '_contents')->first();
+        // Cas spécial pour les modales
+        if ($page === 'modals') {
+            $content = DB::table('modal_contents')->first();
+        } else {
+            // Récupérer le contenu de la page
+            $content = DB::table('page_' . $page . '_contents')->first();
+        }
 
         // Si aucun contenu n'existe, retourner un objet vide
         if (!$content) {
@@ -52,13 +58,18 @@ class PageContentController extends Controller
      */
     public function update(Request $request, $page)
     {
-        $validPages = ['home', 'peinture', 'design', 'gallery', 'contact', 'marques'];
+        $validPages = ['home', 'peinture', 'design', 'gallery', 'contact', 'marques', 'modals'];
 
         if (!in_array($page, $validPages)) {
             abort(404, 'Page introuvable');
         }
 
-        $tableName = 'page_' . $page . '_contents';
+        // Cas spécial pour les modales
+        if ($page === 'modals') {
+            $tableName = 'modal_contents';
+        } else {
+            $tableName = 'page_' . $page . '_contents';
+        }
 
         // Récupérer toutes les données sauf _token et _method
         $data = $request->except(['_token', '_method']);
@@ -78,7 +89,7 @@ class PageContentController extends Controller
 
         return redirect()
             ->route('admin.developer.page-contents.edit', $page)
-            ->with('success', 'Contenu de la page mis à jour avec succès !');
+            ->with('success', 'Contenu mis à jour avec succès !');
     }
 }
 

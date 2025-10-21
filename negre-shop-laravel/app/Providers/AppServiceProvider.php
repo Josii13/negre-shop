@@ -26,7 +26,12 @@ class AppServiceProvider extends ServiceProvider
                 'publicKey' => config('services.emailjs.public_key'),
                 'serviceId' => config('services.emailjs.service_id'),
                 'templateId' => config('services.emailjs.template_id'),
+                'templateAdminId' => config('services.emailjs.template_admin_id'),
             ]);
+            $view->with('adminEmail', config('services.admin.email'));
+            $view->with('adminName', config('services.admin.name'));
+            // Partager le contenu des modales avec toutes les vues
+            $view->with('modalContent', \App\Models\ModalContent::first());
         });
     }
 }

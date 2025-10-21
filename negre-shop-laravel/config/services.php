@@ -36,13 +36,19 @@ return [
     ],
 
     'whatsapp' => [
-        'number' => env('WHATSAPP_NUMBER', '2250769465904'),
+        'number' => env('WHATSAPP_NUMBER', '2250768298965'),
     ],
 
     'emailjs' => [
         'public_key' => env('EMAILJS_PUBLIC_KEY'),
         'service_id' => env('EMAILJS_SERVICE_ID'),
         'template_id' => env('EMAILJS_TEMPLATE_ID'),
+        'template_admin_id' => env('EMAILJS_TEMPLATE_ADMIN_ID'), // Template pour notifications admin
+    ],
+
+    'admin' => [
+        'email' => env('ADMIN_EMAIL', 'admin@negre-shop.com'),
+        'name' => env('ADMIN_NAME', 'Frederic N\'DA'),
     ],
 
 ];

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'NÈGRE Workshop Gallery - Frederic N\'DA')
+@section('title', $pageContent->meta_title ?? 'NÈGRE Workshop Gallery - Frederic N\'DA')
 
 @section('styles')
 <style>
@@ -431,12 +431,18 @@
     <!-- Page Banner -->
     <section class="page-banner">
         <div class="banner-content">
-            <h1>NÈGRE Workshop Gallery</h1>
-            <div class="subtitle">LE NÈGRE | workshop - gallery</div>
-            <p>Un espace inspirant dédié à la création artistique, aux événements et aux échanges culturels.</p>
+            <h1>{{ $pageContent->banner_title ?? 'NÈGRE Workshop Gallery' }}</h1>
+            <div class="subtitle">{{ $pageContent->banner_subtitle ?? 'LE NÈGRE | workshop - gallery' }}</div>
+            <p>{{ $pageContent->banner_description ?? 'Un espace inspirant dédié à la création artistique, aux événements et aux échanges culturels.' }}</p>
+            @if($pageContent && $pageContent->banner_quote)
+            <div class="workshop-description">
+                <p>"{{ $pageContent->banner_quote }}"</p>
+            </div>
+            @else
             <div class="workshop-description">
                 <p>"Est un atelier artistique fondé par l'artiste peintre Frederic N'DA aka 'le nègre', cet espace inspirant destiné à sa pratique artistique, à la créativité, aux petits événements artistiques et aux podcasts où d'autres créateurs et artistes pourront raconter leurs histoires et leurs approches artistiques."</p>
             </div>
+            @endif
         </div>
     </section>
 
@@ -444,10 +450,10 @@
     <section class="tabs-section">
         <div class="tabs-container">
             <div class="tabs-header">
-                <button class="tab-btn active" data-tab="atelier">L'Atelier</button>
-                <button class="tab-btn" data-tab="activites">Activités</button>
-                <button class="tab-btn" data-tab="evenements">Événements</button>
-                <button class="tab-btn" data-tab="podcasts">Podcasts</button>
+                <button class="tab-btn active" data-tab="atelier">{{ $pageContent->tab_atelier ?? 'L\'Atelier' }}</button>
+                <button class="tab-btn" data-tab="activites">{{ $pageContent->tab_activites ?? 'Activités' }}</button>
+                <button class="tab-btn" data-tab="evenements">{{ $pageContent->tab_evenements ?? 'Événements' }}</button>
+                <button class="tab-btn" data-tab="podcasts">{{ $pageContent->tab_podcasts ?? 'Podcasts' }}</button>
             </div>
 
             <!-- Tab 1: L'Atelier -->
@@ -456,7 +462,7 @@
                     @foreach($atelierActivities as $activity)
                     <div class="activity-card" onclick="openActivityModal({{ $loop->index }}, 'atelier')">
                         <div class="activity-image">
-                            <img src="{{ asset('images/' . ($activity->image ?? 'img1.jpg')) }}" alt="{{ $activity->title }}">
+                            <img src="{{ asset($activity->image ? 'storage/' . $activity->image : 'images/img1.jpg') }}" alt="{{ $activity->title }}">
                             <div class="activity-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -483,7 +489,7 @@
                     @foreach($activities as $activity)
                     <div class="activity-card" onclick="openActivityModal({{ $loop->index }}, 'activites')">
                         <div class="activity-image">
-                            <img src="{{ asset('images/' . ($activity->image ?? 'img1.jpg')) }}" alt="{{ $activity->title }}">
+                            <img src="{{ asset($activity->image ? 'storage/' . $activity->image : 'images/img1.jpg') }}" alt="{{ $activity->title }}">
                             <div class="activity-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -510,7 +516,7 @@
                     @forelse($evenements as $activity)
                     <div class="activity-card" onclick="openActivityModal({{ $loop->index }}, 'evenements')">
                         <div class="activity-image">
-                            <img src="{{ asset('images/' . ($activity->image ?? 'img1.jpg')) }}" alt="{{ $activity->title }}">
+                            <img src="{{ asset($activity->image ? 'storage/' . $activity->image : 'images/img1.jpg') }}" alt="{{ $activity->title }}">
                             <div class="activity-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -539,7 +545,7 @@
                     @forelse($podcasts as $activity)
                     <div class="activity-card" onclick="openActivityModal({{ $loop->index }}, 'podcasts')">
                         <div class="activity-image">
-                            <img src="{{ asset('images/' . ($activity->image ?? 'img1.jpg')) }}" alt="{{ $activity->title }}">
+                            <img src="{{ asset($activity->image ? 'storage/' . $activity->image : 'images/img1.jpg') }}" alt="{{ $activity->title }}">
                             <div class="activity-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -630,7 +636,8 @@
     // Ouvrir le modal d'activité
     function openActivityModal(index, tab) {
         currentActivity = allActivities[tab][index];
-        document.getElementById('modalImage').src = '/images/' + (currentActivity.image || 'img1.jpg');
+        const imagePath = currentActivity.image ? '/storage/' + currentActivity.image : '/images/img1.jpg';
+        document.getElementById('modalImage').src = imagePath;
         document.getElementById('modalTitle').textContent = currentActivity.title;
         
         const priceElement = document.getElementById('modalPrice');

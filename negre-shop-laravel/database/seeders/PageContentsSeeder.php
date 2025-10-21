@@ -118,6 +118,31 @@ class PageContentsSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // MODAL CONTENTS (Textes des modales réutilisables)
+        DB::table('modal_contents')->insert([
+            // Modal Details
+            'detail_characteristics_title' => 'Caractéristiques',
+            'detail_button_order' => 'Commander',
+            'detail_button_reserve' => 'Réserver sur WhatsApp',
+            
+            // Modal Order
+            'order_title' => 'Commander',
+            'order_label_name' => 'Nom',
+            'order_label_email' => 'Email',
+            'order_label_phone' => 'Téléphone',
+            'order_label_message' => 'Message',
+            'order_button_submit' => 'Envoyer',
+            
+            // Messages
+            'success_message' => 'Votre commande a été prise en compte avec succès.',
+            'success_submessage' => 'Un email de confirmation vous sera envoyé sous peu.',
+            'loading_title' => 'Envoi en cours...',
+            'loading_message' => 'Veuillez patienter pendant que nous traitons votre demande.',
+            
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }
 

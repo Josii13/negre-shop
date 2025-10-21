@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Frederic N\'DA - Artiste Peintre & Designer')
+@section('title', $pageContent->meta_title ?? 'Frederic N\'DA - Artiste Peintre & Designer')
 
 @section('styles')
 <style>
@@ -218,7 +218,7 @@
             <div class="carousel-slides" id="carouselSlides">
                 @foreach($slides as $index => $slide)
                 <div class="carousel-slide {{ $index === 0 ? 'active' : '' }}">
-                    <img src="{{ asset('images/' . $slide->image) }}" alt="{{ $slide->title }}">
+                    <img src="{{ asset($slide->image ? 'storage/' . $slide->image : 'images/' . $slide->image) }}" alt="{{ $slide->title }}">
                     <div class="carousel-caption">
                         <h3>{{ $slide->title }}</h3>
                         <p>{{ $slide->description }}</p>
@@ -236,7 +236,7 @@
     <section class="hero">
         <div class="hero-content">
             <div class="hero-image">
-                <img src="{{ asset('images/' . ($pageContent->hero_image ?? 'img2.jpg')) }}" alt="{{ $pageContent->hero_title ?? 'Frederic N\'DA' }}">
+                <img src="{{ asset($pageContent && $pageContent->hero_image ? (str_starts_with($pageContent->hero_image, 'images/') ? $pageContent->hero_image : 'storage/' . $pageContent->hero_image) : 'images/img2.jpg') }}" alt="{{ $pageContent->hero_title ?? 'Frederic N\'DA' }}">
             </div>
             <div class="hero-text">
                 <h1>{{ $pageContent->hero_title ?? 'Frederic N\'DA' }}</h1>
@@ -265,7 +265,7 @@
                 };
             @endphp
             <a href="{{ route($routeName) }}" class="category-card">
-                <img src="{{ asset('images/' . ($category->image ?? 'img1.jpg')) }}" alt="{{ $category->name }}">
+                <img src="{{ asset($category->image ? 'storage/' . $category->image : 'images/img1.jpg') }}" alt="{{ $category->name }}">
                 <div class="category-overlay">
                     <h2>{{ $category->name }}</h2>
                     <p class="category-desc">{{ $category->description }}</p>

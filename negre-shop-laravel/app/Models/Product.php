@@ -90,7 +90,7 @@ class Product extends Model
      */
     public function getFormattedPriceAttribute()
     {
-        return $this->price ? number_format($this->price, 0, ',', ' ') . ' FCFA' : null;
+        return $this->price ? number_format((float) $this->price, 0, ',', ' ') . ' FCFA' : null;
     }
 }
 

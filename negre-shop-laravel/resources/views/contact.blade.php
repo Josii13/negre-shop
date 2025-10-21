@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Contact - Frederic N\'DA')
+@section('title', $pageContent->meta_title ?? 'Contact - Frederic N\'DA')
 
 @section('content')
     <!-- Page Banner -->
     <section class="page-banner">
         <div class="banner-content">
-            <h1>Contact</h1>
-            <p>Vous avez un projet, une question ou simplement envie d'échanger ? N'hésitez pas à me contacter. Je serais ravi de discuter avec vous de vos idées et de voir comment nous pourrions collaborer.</p>
+            <h1>{{ $pageContent->banner_title ?? 'Contact' }}</h1>
+            <p>{{ $pageContent->banner_description ?? 'Vous avez un projet, une question ou simplement envie d\'échanger ? N\'hésitez pas à me contacter. Je serais ravi de discuter avec vous de vos idées et de voir comment nous pourrions collaborer.' }}</p>
         </div>
     </section>
 
@@ -15,7 +15,10 @@
     <section class="contact-section">
         <div class="contact-container">
             <div class="contact-form">
-                <h2>Envoyez-moi un message</h2>
+                <h2>{{ $pageContent->form_title ?? 'Envoyez-moi un message' }}</h2>
+                @if($pageContent && $pageContent->form_description)
+                <p style="margin-bottom: 1.5rem; color: #666;">{{ $pageContent->form_description }}</p>
+                @endif
                 
                 <form action="{{ route('contact.store') }}" method="POST" id="contactForm">
                     @csrf
@@ -39,7 +42,7 @@
                 </form>
             </div>
             <div class="contact-info">
-                <h2>Informations</h2>
+                <h2>{{ $pageContent->info_title ?? 'Informations' }}</h2>
                 <div class="info-item">
                     <h3>Adresse</h3>
                     <p>{!! $contactInfo['address'] ?? 'Cocody, Riviera Abatta<br>Abidjan, Côte d\'Ivoire' !!}</p>

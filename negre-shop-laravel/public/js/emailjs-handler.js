@@ -11,7 +11,14 @@
 let EMAIL_CONFIG = {
     publicKey: '',      
     serviceId: '',      
-    templateId: ''     
+    templateId: '',     
+    templateAdminId: '' // Template pour notifications admin
+};
+
+// Configuration Admin (à configurer depuis le backend Laravel)
+let ADMIN_CONFIG = {
+    email: '',
+    name: ''
 };
 
 // Fonction pour mettre à jour la configuration depuis le serveur
@@ -23,6 +30,14 @@ window.setEmailJSConfig = function(config) {
             emailjs.init(EMAIL_CONFIG.publicKey);
             console.log('EmailJS configuré depuis .env');
         }
+    }
+};
+
+// Fonction pour mettre à jour la configuration admin
+window.setAdminConfig = function(config) {
+    if (config && config.email) {
+        ADMIN_CONFIG = config;
+        console.log('Configuration admin chargée');
     }
 };
 
@@ -257,6 +272,151 @@ async function sendEmail(emailData, options = {}) {
 }
 
 /**
+ * Envoyer des emails multiples (client + admin)
+ * @param {Object} customerData - Données de l'email client
+ * @param {Object} adminData - Données de l'email admin
+ * @param {Object} options - Options
+ * @returns {Promise}
+ */
+async function sendDualEmails(customerData, adminData, options = {}) {
+    const defaults = {
+        showSuccessModal: true,
+        showErrorModal: true,
+        reloadOnSuccess: false,
+        reloadDelay: 3000,
+        onSuccess: null,
+        onError: null
+    };
+
+    const config = { ...defaults, ...options };
+
+    // Vérifier que EmailJS est chargé
+    if (typeof emailjs === 'undefined') {
+        console.error('EmailJS n\'est pas chargé');
+        if (config.showErrorModal) {
+            showErrorModal({
+                title: 'Erreur technique',
+                message: 'Le service d\'envoi d\'email n\'est pas disponible.',
+                subMessage: 'Veuillez réessayer plus tard.'
+            });
+        }
+        return Promise.reject('EmailJS non disponible');
+    }
+
+    try {
+        // Mettre à jour le texte de chargement
+        const loadingText = document.getElementById('loadingText');
+        let customerResponse = null;
+        let adminResponse = null;
+
+        // ============================================
+        // ÉTAPE 1 : Envoyer l'email au CLIENT
+        // ============================================
+        if (loadingText) {
+            loadingText.textContent = 'Envoi de l\'email au client...';
+        }
+
+        try {
+            customerResponse = await emailjs.send(
+                EMAIL_CONFIG.serviceId,
+                EMAIL_CONFIG.templateId,
+                customerData
+            );
+            console.log('✅ Email client envoyé avec succès:', customerResponse);
+        } catch (customerError) {
+            console.error('❌ Erreur envoi email client:', customerError);
+            throw customerError; // Stopper si email client échoue
+        }
+
+        // Petite pause de 1 seconde entre les deux envois
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // ============================================
+        // ÉTAPE 2 : Envoyer l'email à l'ADMIN
+        // ============================================
+        if (EMAIL_CONFIG.templateAdminId && ADMIN_CONFIG.email) {
+            if (loadingText) {
+                loadingText.textContent = 'Envoi de la notification admin...';
+            }
+
+            try {
+                adminResponse = await emailjs.send(
+                    EMAIL_CONFIG.serviceId,
+                    EMAIL_CONFIG.templateAdminId,
+                    adminData
+                );
+                console.log('✅ Email admin envoyé avec succès:', adminResponse);
+            } catch (adminError) {
+                console.error('❌ Erreur envoi email admin:', adminError);
+                console.warn('⚠️ L\'email client a été envoyé, mais l\'email admin a échoué');
+                // On ne throw pas l'erreur admin pour ne pas bloquer le processus
+            }
+        } else {
+            console.warn('⚠️ Template admin non configuré ou email admin manquant');
+            console.log('CONFIG:', {
+                templateAdminId: EMAIL_CONFIG.templateAdminId,
+                adminEmail: ADMIN_CONFIG.email
+            });
+        }
+
+        // Mettre à jour le texte de chargement
+        if (loadingText) {
+            if (adminResponse) {
+                loadingText.textContent = 'Emails envoyés !';
+            } else {
+                loadingText.textContent = 'Email client envoyé !';
+            }
+        }
+
+        // Callback personnalisé
+        if (config.onSuccess && typeof config.onSuccess === 'function') {
+            config.onSuccess({ customerResponse, adminResponse });
+        }
+
+        // Recharger la page si configuré
+        if (config.reloadOnSuccess) {
+            setTimeout(() => {
+                window.location.reload();
+            }, config.reloadDelay);
+        }
+
+        return { customerResponse, adminResponse };
+
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi des emails:', error);
+
+        // Mettre à jour le texte de chargement
+        const loadingText = document.getElementById('loadingText');
+        if (loadingText) {
+            loadingText.textContent = 'Email en cours d\'envoi...';
+        }
+
+        // Callback personnalisé
+        if (config.onError && typeof config.onError === 'function') {
+            config.onError(error);
+        }
+
+        // Afficher la modale d'erreur si configuré
+        if (config.showErrorModal) {
+            showErrorModal({
+                title: 'Erreur d\'envoi',
+                message: 'L\'email de confirmation n\'a pas pu être envoyé.',
+                subMessage: 'Votre commande a bien été enregistrée. Nous vous contacterons bientôt.'
+            });
+        }
+
+        // Recharger quand même si configuré
+        if (config.reloadOnSuccess) {
+            setTimeout(() => {
+                window.location.reload();
+            }, config.reloadDelay);
+        }
+
+        throw error;
+    }
+}
+
+/**
  * Traiter une soumission de formulaire avec EmailJS
  * @param {HTMLFormElement} form - Le formulaire
  * @param {Function} prepareEmailData - Fonction pour préparer les données email
@@ -308,15 +468,29 @@ async function handleFormSubmit(form, prepareEmailData, options = {}) {
                 });
             }
 
-            // Envoyer l'email si configuré
+            // Envoyer l'email (ou les emails) si configuré
             if (config.sendEmail && prepareEmailData) {
-                const emailData = prepareEmailData(formData, data);
-                await sendEmail(emailData, {
-                    showSuccessModal: false,
-                    showErrorModal: false,
-                    reloadOnSuccess: config.reloadOnSuccess,
-                    reloadDelay: config.reloadDelay
-                });
+                // Si une fonction pour préparer l'email admin est fournie, envoyer 2 emails
+                if (config.prepareAdminEmailData && typeof config.prepareAdminEmailData === 'function') {
+                    const customerData = prepareEmailData(formData, data);
+                    const adminData = config.prepareAdminEmailData(formData, data);
+                    
+                    await sendDualEmails(customerData, adminData, {
+                        showSuccessModal: false,
+                        showErrorModal: false,
+                        reloadOnSuccess: config.reloadOnSuccess,
+                        reloadDelay: config.reloadDelay
+                    });
+                } else {
+                    // Envoi simple (client seulement)
+                    const emailData = prepareEmailData(formData, data);
+                    await sendEmail(emailData, {
+                        showSuccessModal: false,
+                        showErrorModal: false,
+                        reloadOnSuccess: config.reloadOnSuccess,
+                        reloadDelay: config.reloadDelay
+                    });
+                }
             } else if (config.reloadOnSuccess) {
                 setTimeout(() => {
                     window.location.reload();
@@ -355,5 +529,6 @@ window.showErrorModal = showErrorModal;
 window.closeErrorModal = closeErrorModal;
 window.showToast = showToast;
 window.sendEmail = sendEmail;
+window.sendDualEmails = sendDualEmails;
 window.handleFormSubmit = handleFormSubmit;
 

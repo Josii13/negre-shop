@@ -122,6 +122,9 @@
                 <a class="collapse-item {{ request()->is('admin/developer/page-contents/gallery') ? 'active' : '' }}" href="{{ route('admin.developer.page-contents.edit', 'gallery') }}">Page Gallery</a>
                 <a class="collapse-item {{ request()->is('admin/developer/page-contents/contact') ? 'active' : '' }}" href="{{ route('admin.developer.page-contents.edit', 'contact') }}">Page Contact</a>
                 <a class="collapse-item {{ request()->is('admin/developer/page-contents/marques') ? 'active' : '' }}" href="{{ route('admin.developer.page-contents.edit', 'marques') }}">Page Marques</a>
+                <div class="collapse-divider"></div>
+                <h6 class="collapse-header">Composants partagés:</h6>
+                <a class="collapse-item {{ request()->is('admin/developer/page-contents/modals') ? 'active' : '' }}" href="{{ route('admin.developer.page-contents.edit', 'modals') }}">Modales (Textes)</a>
             </div>
         </div>
     </li>
