@@ -101,13 +101,16 @@ function buildClientEmailData(formData, serverData) {
  * Prépare les données pour l'email admin
  */
 function buildAdminEmailData(formData, serverData) {
+    const customerName = formData.get('customer_name');
+    const productName = serverData.product_name;
+    
     return {
         to_email: EMAILJS_CONFIG.adminEmail,
         to_name: EMAILJS_CONFIG.adminName,
-        customer_name: formData.get('customer_name'),
+        customer_name: customerName,
         customer_email: formData.get('customer_email'),
         customer_phone: formData.get('customer_phone'),
-        product_name: serverData.product_name,
+        product_name: productName,
         product_price: serverData.product_price,
         message: formData.get('message'),
         order_date: new Date().toLocaleDateString('fr-FR', { 
@@ -116,7 +119,10 @@ function buildAdminEmailData(formData, serverData) {
             day: 'numeric', 
             hour: '2-digit', 
             minute: '2-digit' 
-        })
+        }),
+        // Versions URL-encodées pour les liens mailto: (compatibilité mobile)
+        product_name_encoded: encodeURIComponent(productName),
+        customer_name_encoded: encodeURIComponent(customerName)
     };
 }
 
@@ -156,7 +162,8 @@ async function sendDualEmails(form, serverData) {
 function openWhatsAppWithMessage(messageText) {
     const phoneNumber = EMAILJS_CONFIG.whatsappNumber || '2250769465904';
     const encodedMessage = encodeURIComponent(messageText);
-    const url = `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${encodedMessage}`;
+    // Utiliser wa.me (URL universelle qui s'adapte à l'environnement : mobile app, desktop app, ou web)
+    const url = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     
     // Copier le message dans le presse-papier
     if (navigator.clipboard && messageText) {

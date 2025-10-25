@@ -23,6 +23,7 @@
                         <th>Client</th>
                         <th>Email</th>
                         <th>Téléphone</th>
+                        <th>Canal</th>
                         <th>Produit</th>
                         <th>Statut</th>
                         <th>Actions</th>
@@ -36,6 +37,17 @@
                             <td>{{ $order->customer_name }}</td>
                             <td>{{ $order->customer_email }}</td>
                             <td>{{ $order->customer_phone }}</td>
+                            <td class="text-center">
+                                @if($order->order_channel === 'whatsapp')
+                                    <span class="badge badge-success" title="Commande via WhatsApp">
+                                        <i class="fab fa-whatsapp"></i> WhatsApp
+                                    </span>
+                                @else
+                                    <span class="badge badge-primary" title="Commande via Email">
+                                        <i class="fas fa-envelope"></i> Email
+                                    </span>
+                                @endif
+                            </td>
                             <td>
                                 @if($order->product)
                                     <strong>{{ $order->product->name }}</strong><br>
@@ -68,7 +80,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center">Aucune commande trouvée</td>
+                            <td colspan="9" class="text-center">Aucune commande trouvée</td>
                         </tr>
                     @endforelse
                 </tbody>

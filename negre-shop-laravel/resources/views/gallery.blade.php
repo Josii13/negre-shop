@@ -656,8 +656,8 @@
         
         const message = `Bonjour, je souhaite réserver : ${currentActivity.title}`;
         const encodedMessage = encodeURIComponent(message);
-        // Utiliser web.whatsapp.com qui gère mieux les messages pré-remplis
-        document.getElementById('modalWhatsapp').href = `https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
+        // Utiliser wa.me (URL universelle qui s'adapte à l'environnement : mobile app, desktop app, ou web)
+        document.getElementById('modalWhatsapp').href = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
         
         document.getElementById('activityModal').classList.add('active');
         document.body.style.overflow = 'hidden';

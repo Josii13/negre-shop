@@ -42,6 +42,20 @@
                         <td><a href="tel:{{ $order->customer_phone }}">{{ $order->customer_phone }}</a></td>
                     </tr>
                     <tr>
+                        <th>Canal:</th>
+                        <td>
+                            @if($order->order_channel === 'whatsapp')
+                                <span class="badge badge-success">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </span>
+                            @else
+                                <span class="badge badge-primary">
+                                    <i class="fas fa-envelope"></i> Email
+                                </span>
+                            @endif
+                        </td>
+                    </tr>
+                    <tr>
                         <th>Date commande:</th>
                         <td>{{ $order->created_at->format('d/m/Y à H:i') }}</td>
                     </tr>

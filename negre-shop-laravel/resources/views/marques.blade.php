@@ -385,12 +385,17 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
+                console.log('📦 Réponse serveur (WhatsApp):', data);
+                
                 if (data.success) {
                     // Fermer la modal
                     closeOrderModal();
                     
                     // Si la commande est via WhatsApp, rediriger
                     if (data.redirect_to_whatsapp && data.whatsapp_url) {
+                        console.log('✅ Redirection WhatsApp détectée');
+                        console.log('🔗 URL WhatsApp:', data.whatsapp_url);
+                        
                         // Copier le message dans le presse-papier
                         if (data.message_text && navigator.clipboard) {
                             navigator.clipboard.writeText(data.message_text).catch(() => {});
@@ -530,9 +535,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Changer le canal de commande à "whatsapp"
         document.getElementById('order_channel').value = 'whatsapp';
         
-        // Soumettre le formulaire (cela va enregistrer la commande en BDD avec order_channel='whatsapp')
-        // Puis dans la réponse (success callback), on redirigera vers WhatsApp
-        form.submit();
+        // Déclencher l'événement submit pour que le listener AJAX l'intercepte
+        // Note: on ne peut pas appeler form.submit() car ça bypass les event listeners
+        form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
     }
 
     window.closeOrderModal = function() {

@@ -407,8 +407,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Changer le canal de commande à "whatsapp"
         document.getElementById('order_channel').value = 'whatsapp';
         
-        // Soumettre le formulaire (qui sera intercepté par l'event listener)
-        form.submit();
+        // Déclencher l'événement submit pour que le listener AJAX l'intercepte
+        // Note: on ne peut pas appeler form.submit() car ça bypass les event listeners
+        form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
     }
 
     // Gestion de la soumission du formulaire avec le système global EmailJS
@@ -442,9 +443,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .then(response => response.json())
                 .then(data => {
+                    console.log('📦 Réponse serveur (WhatsApp):', data);
+                    
                     if (data.success) {
                         // Fermer la modal
                         closeOrderModal();
+                        
+                        // Vérifier si on a bien les infos WhatsApp
+                        if (data.redirect_to_whatsapp && data.whatsapp_url) {
+                            console.log('✅ Redirection WhatsApp activée');
+                            console.log('🔗 URL WhatsApp:', data.whatsapp_url);
+                        } else {
+                            console.warn('⚠️ Pas de redirection WhatsApp dans la réponse');
+                        }
                         
                         // Copier le message dans le presse-papier
                         if (data.message_text && navigator.clipboard) {

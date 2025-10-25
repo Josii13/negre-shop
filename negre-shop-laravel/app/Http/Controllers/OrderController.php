@@ -56,8 +56,8 @@ class OrderController extends Controller
                 $whatsappNumber = config('services.whatsapp.number', '2250769465904');
                 $message = "Bonjour, je souhaite commander le produit suivant :\n\n*{$product->name}*\nPrix : " . ($product->formatted_price ?? $product->price . ' FCFA') . "\n\nNom: {$order->customer_name}\nEmail: {$order->customer_email}\nTéléphone: {$order->customer_phone}\n\nMerci de me recontacter pour finaliser la commande.";
                 $encodedMessage = urlencode($message);
-                // Utiliser web.whatsapp.com qui fonctionne mieux avec les messages pré-remplis
-                $response['whatsapp_url'] = "https://web.whatsapp.com/send?phone={$whatsappNumber}&text={$encodedMessage}";
+            // Utiliser wa.me (URL universelle qui s'adapte à l'environnement : mobile app, desktop app, ou web)
+            $response['whatsapp_url'] = "https://wa.me/{$whatsappNumber}?text={$encodedMessage}";
                 $response['redirect_to_whatsapp'] = true;
                 $response['message_text'] = $message; // Pour copie manuelle si besoin
             }
