@@ -8,6 +8,7 @@ use App\Http\Controllers\MarqueController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\Api\EmailConfigController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
@@ -47,6 +48,9 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 
 // Orders (pour les commandes publiques)
 Route::post('/order', [OrderController::class, 'store'])->name('order.store');
+
+// API - Configuration EmailJS (publique)
+Route::get('/api/email-config', [EmailConfigController::class, 'show'])->name('api.email-config');
 
 /*
 |--------------------------------------------------------------------------

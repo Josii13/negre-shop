@@ -477,34 +477,209 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = 'auto';
     }
 
-    // Gestion de la soumission du formulaire avec le système global
+    // Fonction appelée quand l'utilisateur clique sur "Continuer sur WhatsApp"
+    window.submitOrderViaWhatsApp = function() {
+        const form = document.getElementById('orderForm');
+        
+        // Valider le formulaire
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        
+        // Changer le canal de commande à "whatsapp"
+        document.getElementById('order_channel').value = 'whatsapp';
+        
+        // Soumettre le formulaire (qui sera intercepté par l'event listener)
+        form.submit();
+    }
+
+    // Gestion de la soumission du formulaire avec le système global EmailJS
     const orderForm = document.getElementById('orderForm');
     if (orderForm) {
         orderForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Fonction pour préparer les données email
-            const prepareEmailData = (formData, serverData) => ({
-                to_email: formData.get('customer_email'),
-                to_name: formData.get('customer_name'),
-                product_name: serverData.product_name,
-                product_price: serverData.product_price,
-                customer_phone: formData.get('customer_phone'),
-                message: formData.get('message')
-            });
-
-            // Utiliser le gestionnaire global
-            handleFormSubmit(orderForm, prepareEmailData, {
-                showSuccessModal: true,
-                sendEmail: true,
-                reloadOnSuccess: true,
-                reloadDelay: 3000,
-                successMessage: 'Votre commande a été prise en compte avec succès.',
-                successSubMessage: 'Un email de confirmation vous sera envoyé sous peu.'
-            }).then(() => {
-                // Fermer la modale de commande après succès
-                closeOrderModal();
-            });
+            const formData = new FormData(this);
+            const orderChannel = formData.get('order_channel');
+            
+            // Si c'est une commande WhatsApp, gérer via AJAX
+            if (orderChannel === 'whatsapp') {
+                const submitBtn = document.getElementById('submitBtn');
+                const whatsappBtn = document.getElementById('submitWhatsAppBtn');
+                
+                // Désactiver les boutons pendant l'envoi
+                submitBtn.disabled = true;
+                whatsappBtn.disabled = true;
+                whatsappBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+                
+                // Envoyer la commande
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Fermer la modal
+                        closeOrderModal();
+                        
+                        // Copier le message dans le presse-papier
+                        if (data.message_text && navigator.clipboard) {
+                            navigator.clipboard.writeText(data.message_text).catch(() => {});
+                        }
+                        
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Redirection vers WhatsApp',
+                            html: `
+                                <p><strong>Commande enregistrée avec succès !</strong></p>
+                                <p style="margin-top: 1rem; font-size: 0.9em; color: #666;">
+                                    <i class="fas fa-info-circle"></i> Le message a été copié automatiquement.<br>
+                                    Si le texte n'apparaît pas dans WhatsApp, <strong>collez-le manuellement</strong> (Ctrl+V).
+                                </p>
+                            `,
+                            confirmButtonText: 'Ouvrir WhatsApp',
+                            confirmButtonColor: '#25D366',
+                            showCancelButton: true,
+                            cancelButtonText: 'Copier le message',
+                            cancelButtonColor: '#6c757d'
+                        }).then((result) => {
+                            if (result.isConfirmed && data.whatsapp_url) {
+                                window.open(data.whatsapp_url, '_blank');
+                            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                                // Recopier le message
+                                if (data.message_text) {
+                                    navigator.clipboard.writeText(data.message_text).then(() => {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Message copié !',
+                                            text: 'Collez-le dans WhatsApp (Ctrl+V)',
+                                            timer: 2000,
+                                            showConfirmButton: false
+                                        });
+                                    });
+                                }
+                            }
+                        });
+                        
+                        // Réinitialiser le formulaire
+                        orderForm.reset();
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur !',
+                        text: 'Une erreur est survenue lors de l\'envoi de la commande.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#e74a3b'
+                    });
+                })
+                .finally(() => {
+                    // Réactiver les boutons
+                    submitBtn.disabled = false;
+                    whatsappBtn.disabled = false;
+                    whatsappBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Continuer sur WhatsApp';
+                });
+            } else {
+                // Utiliser le nouveau système EmailJS sécurisé avec envoi double (client + admin)
+                const submitBtn = document.getElementById('submitBtn');
+                const whatsappBtn = document.getElementById('submitWhatsAppBtn');
+                
+                // Vérifier que les boutons existent avant de les manipuler
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+                }
+                if (whatsappBtn) {
+                    whatsappBtn.disabled = true;
+                }
+                
+                // Envoyer le formulaire au serveur pour enregistrer la commande
+                fetch(orderForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(async (data) => {
+                    if (data.success) {
+                        // Envoyer les emails via le nouveau système sécurisé
+                        try {
+                            await window.OrderEmailHandler.sendDualEmails(orderForm, {
+                                product_name: data.product_name || currentProductDesign.name,
+                                product_price: data.product_price || currentProductDesign.formatted_price || currentProductDesign.price + ' FCFA'
+                            });
+                            
+                            // Fermer la modal
+                            closeOrderModal();
+                            
+                            // Afficher le message de succès
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Commande envoyée !',
+                                html: `
+                                    <p>${data.message || 'Votre commande a été prise en compte avec succès.'}</p>
+                                    <p style="margin-top: 1rem; font-size: 0.9em; color: #666;">
+                                        Un email de confirmation vous a été envoyé.
+                                    </p>
+                                `,
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#000'
+                            }).then(() => {
+                                // Réinitialiser et recharger après 1 seconde
+                                orderForm.reset();
+                                setTimeout(() => location.reload(), 1000);
+                            });
+                        } catch (emailError) {
+                            console.error('Erreur envoi emails:', emailError);
+                            // Même si l'email échoue, la commande est enregistrée
+                            closeOrderModal();
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Commande enregistrée',
+                                text: 'Votre commande a été enregistrée mais l\'email n\'a pas pu être envoyé.',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#000'
+                            }).then(() => {
+                                orderForm.reset();
+                                setTimeout(() => location.reload(), 1000);
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur !',
+                        text: 'Une erreur est survenue lors de l\'envoi de la commande.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#e74a3b'
+                    });
+                })
+                .finally(() => {
+                    // Réactiver les boutons seulement s'ils existent
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Commander via Email';
+                    }
+                    if (whatsappBtn) {
+                        whatsappBtn.disabled = false;
+                    }
+                });
+            }
         });
     }
 

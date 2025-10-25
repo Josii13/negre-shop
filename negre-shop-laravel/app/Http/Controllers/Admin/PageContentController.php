@@ -106,8 +106,8 @@ class PageContentController extends Controller
             $data['hero_image'] = $request->input('hero_image_current');
         }
         
-        // Gérer l'upload de l'image banner background (pages peinture, design et gallery)
-        if (in_array($page, ['peinture', 'design', 'gallery']) && $request->hasFile('banner_background_file')) {
+        // Gérer l'upload de l'image banner background (pages peinture, design, gallery et marques)
+        if (in_array($page, ['peinture', 'design', 'gallery', 'marques']) && $request->hasFile('banner_background_file')) {
             $image = $request->file('banner_background_file');
             
             // Valider l'image
@@ -132,7 +132,7 @@ class PageContentController extends Controller
             
             // Stocker le nom du fichier (sans le chemin images/)
             $data['banner_background'] = $imageName;
-        } elseif (in_array($page, ['peinture', 'design', 'gallery']) && !$request->hasFile('banner_background_file')) {
+        } elseif (in_array($page, ['peinture', 'design', 'gallery', 'marques']) && !$request->hasFile('banner_background_file')) {
             // Si pas de nouveau fichier, garder l'ancienne valeur
             $data['banner_background'] = $request->input('banner_background_current');
         }

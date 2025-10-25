@@ -117,6 +117,7 @@
 
         <!-- Public JS -->
         <script src="{{ asset('js/emailjs-handler.js') }}"></script>
+        <script src="{{ asset('js/order-email-handler.js') }}"></script>
         
         <!-- Configuration EmailJS et Admin depuis .env -->
         <script>

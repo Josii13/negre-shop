@@ -265,7 +265,7 @@
 
 @section('content')
     <!-- Page Banner -->
-    <section class="page-banner">
+    <section class="page-banner" @if($pageContent && $pageContent->banner_background) style="background-image: linear-gradient(135deg, rgba(250, 250, 250, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%), url('{{ asset('images/' . $pageContent->banner_background) }}'); background-size: cover; background-position: center;" @endif>
         <div class="banner-content">
             <h1>{{ $category->banner_title ?? $category->name }}</h1>
             <p>{{ $category->banner_description ?? $category->description }}</p>
@@ -364,16 +364,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const submitBtn = document.getElementById('submitBtn');
             const whatsappBtn = document.getElementById('submitWhatsAppBtn');
             
-            // Désactiver les boutons pendant l'envoi
-            submitBtn.disabled = true;
-            whatsappBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+            // Désactiver les boutons pendant l'envoi (vérifier qu'ils existent)
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+            }
+            if (whatsappBtn) {
+                whatsappBtn.disabled = true;
+            }
             
             // Envoyer la commande
             fetch(this.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json'
                 }
@@ -450,10 +455,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             })
             .finally(() => {
-                // Réactiver les boutons
-                submitBtn.disabled = false;
-                whatsappBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> {{ $modalContent->order_button_submit ?? "Commander via Email" }}';
+                // Réactiver les boutons (vérifier qu'ils existent)
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> {{ $modalContent->order_button_submit ?? "Commander via Email" }}';
+                }
+                if (whatsappBtn) {
+                    whatsappBtn.disabled = false;
+                }
             });
         });
     }
@@ -501,8 +510,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('product_id').value = product.id;
         document.getElementById('message').value = message;
         
-        // Afficher la modal
-        document.getElementById('orderModal').style.display = 'flex';
+        // Afficher la modal avec classList pour cohérence
+        const orderModal = document.getElementById('orderModal');
+        orderModal.classList.add('active');
+        orderModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 
@@ -525,14 +536,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.closeOrderModal = function() {
-        document.getElementById('orderModal').style.display = 'none';
+        const orderModal = document.getElementById('orderModal');
+        orderModal.classList.remove('active');
+        orderModal.style.display = 'none';
         document.body.style.overflow = 'auto';
-    }
-
-    window.orderFromDetail = function() {
-        if (currentProductMarque) {
-            openOrderModal(currentProductMarque);
-        }
     }
 
     document.getElementById('detailModal').addEventListener('click', function(e) {
