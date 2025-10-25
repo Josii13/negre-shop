@@ -28,7 +28,6 @@ window.setEmailJSConfig = function(config) {
         // Réinitialiser EmailJS avec la nouvelle clé
         if (typeof emailjs !== 'undefined') {
             emailjs.init(EMAIL_CONFIG.publicKey);
-            console.log('EmailJS configuré depuis .env');
         }
     }
 };
@@ -37,7 +36,6 @@ window.setEmailJSConfig = function(config) {
 window.setAdminConfig = function(config) {
     if (config && config.email) {
         ADMIN_CONFIG = config;
-        console.log('Configuration admin chargée');
     }
 };
 
@@ -45,7 +43,6 @@ window.setAdminConfig = function(config) {
 (function initEmailJS() {
     if (typeof emailjs !== 'undefined') {
         emailjs.init(EMAIL_CONFIG.publicKey);
-        console.log('EmailJS initialisé avec succès');
     } else {
         console.warn('EmailJS SDK non chargé');
     }
@@ -215,8 +212,6 @@ async function sendEmail(emailData, options = {}) {
             emailData
         );
 
-        console.log('Email envoyé avec succès:', response);
-
         // Mettre à jour le texte de chargement
         const loadingText = document.getElementById('loadingText');
         if (loadingText) {
@@ -322,9 +317,8 @@ async function sendDualEmails(customerData, adminData, options = {}) {
                 EMAIL_CONFIG.templateId,
                 customerData
             );
-            console.log('✅ Email client envoyé avec succès:', customerResponse);
         } catch (customerError) {
-            console.error('❌ Erreur envoi email client:', customerError);
+            console.error('Erreur envoi email client:', customerError);
             throw customerError; // Stopper si email client échoue
         }
 
@@ -345,18 +339,13 @@ async function sendDualEmails(customerData, adminData, options = {}) {
                     EMAIL_CONFIG.templateAdminId,
                     adminData
                 );
-                console.log('✅ Email admin envoyé avec succès:', adminResponse);
             } catch (adminError) {
-                console.error('❌ Erreur envoi email admin:', adminError);
-                console.warn('⚠️ L\'email client a été envoyé, mais l\'email admin a échoué');
+                console.error('Erreur envoi email admin:', adminError);
+                console.warn('L\'email client a été envoyé, mais l\'email admin a échoué');
                 // On ne throw pas l'erreur admin pour ne pas bloquer le processus
             }
         } else {
-            console.warn('⚠️ Template admin non configuré ou email admin manquant');
-            console.log('CONFIG:', {
-                templateAdminId: EMAIL_CONFIG.templateAdminId,
-                adminEmail: ADMIN_CONFIG.email
-            });
+            console.warn('Template admin non configuré ou email admin manquant');
         }
 
         // Mettre à jour le texte de chargement

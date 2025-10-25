@@ -84,16 +84,12 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Script de confirmation chargé');
-    
     const form = document.getElementById('pageContentForm');
     const submitBtn = document.getElementById('submitBtn');
     const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
     
-    console.log('📋 Éléments trouvés:', { form: !!form, submitBtn: !!submitBtn, confirmSubmitBtn: !!confirmSubmitBtn });
-    
     if (!form || !submitBtn || !confirmSubmitBtn) {
-        console.error('❌ Certains éléments sont manquants !');
+        console.error('Erreur: éléments du formulaire introuvables');
         return;
     }
     
@@ -103,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Capturer les valeurs initiales de tous les champs
     function captureInitialValues() {
         const formElements = form.querySelectorAll('input, textarea, select');
-        console.log(`📝 Capture de ${formElements.length} champs`);
         formElements.forEach(element => {
             if (element.type === 'file') {
                 initialValues.set(element.id || element.name, '');
@@ -158,7 +153,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        console.log(`🔍 ${changes.length} modification(s) détectée(s)`);
         return changes;
     }
     
@@ -171,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return label.textContent.trim();
             }
         }
-        
         return element.name || element.id || 'Champ inconnu';
     }
     
@@ -232,32 +225,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Gérer le clic sur "Enregistrer"
     submitBtn.addEventListener('click', function(e) {
-        console.log('🖱️ Clic sur le bouton Enregistrer');
         e.preventDefault();
         
         const changes = detectChanges();
         displayChanges(changes);
         
         if (changes.length === 0) {
-            console.log('⚠️ Aucune modification détectée');
             alert('Aucune modification détectée. Rien à enregistrer.');
             return;
         }
         
-        console.log('✅ Affichage de la modale de confirmation');
         $('#confirmationModal').modal('show');
     });
     
     // Gérer la confirmation
     confirmSubmitBtn.addEventListener('click', function() {
-        console.log('✅ Confirmation de l\'enregistrement');
         $('#confirmationModal').modal('hide');
         form.submit();
     });
     
     // Capturer les valeurs initiales au chargement
     captureInitialValues();
-    console.log('✅ Script initialisé avec succès');
 });
 </script>
 @endsection

@@ -202,6 +202,4 @@ document.querySelectorAll('.product-card').forEach(card => {
     observer.observe(card);
 });
 
-// Console message for developers
-console.log('%c Site créé pour Frederic N\'DA ', 'background: #000; color: #fff; padding: 10px; font-size: 14px;');
-console.log('%c Artiste Peintre & Designer Ivoirien ', 'background: #f7f7f7; color: #000; padding: 10px; font-size: 12px;');
+// Site créé pour Frederic N'DA - Artiste Peintre & Designer Ivoirien

@@ -265,8 +265,8 @@
                         const templateId = '{{ env('EMAILJS_TEMPLATE_ID', 'template_nrtko5u') }}';
                         
                         emailjs.send(serviceId, templateId, emailData)
-                            .then((response) => {
-                                console.log('Email envoyé avec succès:', response);
+                            .then(() => {
+                                // Email envoyé avec succès
                             })
                             .catch(err => {
                                 console.error('Erreur lors de l\'envoi de l\'email:', err);

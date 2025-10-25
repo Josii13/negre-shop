@@ -362,16 +362,12 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('📦 Réponse serveur (WhatsApp):', data);
-                
                 if (data.success) {
                     // Fermer la modal
                     closeOrderModal();
                     
                     // Si la commande est via WhatsApp, rediriger
                     if (data.redirect_to_whatsapp && data.whatsapp_url) {
-                        console.log('✅ Redirection WhatsApp détectée');
-                        console.log('🔗 URL WhatsApp:', data.whatsapp_url);
                         
                         // Copier le message dans le presse-papier
                         if (data.message_text && navigator.clipboard) {

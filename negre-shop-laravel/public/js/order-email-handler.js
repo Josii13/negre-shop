@@ -49,12 +49,11 @@ async function loadEmailJSConfig() {
         if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey) {
             emailjs.init(EMAILJS_CONFIG.publicKey);
             isEmailJSReady = true;
-            console.log('✅ EmailJS configuration loaded and initialized');
         } else {
-            console.warn('⚠️ EmailJS library not found or public key missing');
+            console.warn('EmailJS library not found or public key missing');
         }
     } catch (e) {
-        console.error('❌ Erreur chargement EmailJS:', e);
+        console.error('Erreur chargement EmailJS:', e);
         isEmailJSReady = false;
     }
 }
@@ -77,7 +76,7 @@ async function sendEmailAdmin(data) {
         throw new Error('EmailJS non initialisé');
     }
     if (!EMAILJS_CONFIG.templateAdminId) {
-        console.warn('⚠️ Template admin non configuré, email admin non envoyé');
+        console.warn('Template admin non configuré, email admin non envoyé');
         return Promise.resolve(null);
     }
     return emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateAdminId, data);
@@ -135,23 +134,19 @@ async function sendDualEmails(form, serverData) {
     const adminData = buildAdminEmailData(formData, serverData);
     
     try {
-        console.log('📧 Envoi email client...');
         const clientRes = await sendEmailClient(clientData);
-        console.log('✅ Email client envoyé:', clientRes);
         
         // Pause courte entre les envois pour éviter le rate limiting
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         let adminRes = null;
         if (EMAILJS_CONFIG.templateAdminId) {
-            console.log('📧 Envoi email admin...');
             adminRes = await sendEmailAdmin(adminData);
-            console.log('✅ Email admin envoyé:', adminRes);
         }
         
         return { clientRes, adminRes, success: true };
     } catch (err) {
-        console.error('❌ Erreur envoi emails:', err);
+        console.error('Erreur envoi emails:', err);
         throw err;
     }
 }
@@ -168,7 +163,7 @@ function openWhatsAppWithMessage(messageText) {
     // Copier le message dans le presse-papier
     if (navigator.clipboard && messageText) {
         navigator.clipboard.writeText(messageText).catch(() => {
-            console.warn('⚠️ Impossible de copier le message dans le presse-papier');
+            console.warn('Impossible de copier le message dans le presse-papier');
         });
     }
     
@@ -245,7 +240,7 @@ async function handleOrderSubmit(form, productData, options = {}) {
         
         return { success: true };
     } catch (error) {
-        console.error('❌ Erreur lors de la soumission:', error);
+        console.error('Erreur lors de la soumission:', error);
         
         // Callback d'erreur
         if (onError && typeof onError === 'function') {
