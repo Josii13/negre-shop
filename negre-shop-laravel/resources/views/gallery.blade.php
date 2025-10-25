@@ -429,7 +429,7 @@
 
 @section('content')
     <!-- Page Banner -->
-    <section class="page-banner">
+    <section class="page-banner" @if($pageContent && $pageContent->banner_background) style="background-image: linear-gradient(135deg, rgba(250, 250, 250, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%), url('{{ asset('images/' . $pageContent->banner_background) }}'); background-size: cover; background-position: center;" @endif>
         <div class="banner-content">
             <h1>{{ $pageContent->banner_title ?? 'NÈGRE Workshop Gallery' }}</h1>
             <div class="subtitle">{{ $pageContent->banner_subtitle ?? 'LE NÈGRE | workshop - gallery' }}</div>
@@ -656,7 +656,8 @@
         
         const message = `Bonjour, je souhaite réserver : ${currentActivity.title}`;
         const encodedMessage = encodeURIComponent(message);
-        document.getElementById('modalWhatsapp').href = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+        // Utiliser web.whatsapp.com qui gère mieux les messages pré-remplis
+        document.getElementById('modalWhatsapp').href = `https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
         
         document.getElementById('activityModal').classList.add('active');
         document.body.style.overflow = 'hidden';

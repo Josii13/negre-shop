@@ -20,6 +20,11 @@ return new class extends Migration
             $table->text('banner_quote')->nullable();
             $table->string('banner_background')->nullable();
             
+            // Gallery Card Section (Page d'accueil)
+            $table->string('gallery_name')->default('Gallery');
+            $table->text('gallery_description')->nullable();
+            $table->string('gallery_image')->nullable();
+            
             // Tabs Section
             $table->string('tab_atelier')->default('L\'Atelier');
             $table->string('tab_activites')->default('Activités');

@@ -218,7 +218,7 @@
             <div class="carousel-slides" id="carouselSlides">
                 @foreach($slides as $index => $slide)
                 <div class="carousel-slide {{ $index === 0 ? 'active' : '' }}">
-                    <img src="{{ asset($slide->image ? 'storage/' . $slide->image : 'images/' . $slide->image) }}" alt="{{ $slide->title }}">
+                    <img src="{{ asset('images/' . $slide->image) }}" alt="{{ $slide->title }}">
                     <div class="carousel-caption">
                         <h3>{{ $slide->title }}</h3>
                         <p>{{ $slide->description }}</p>
@@ -236,7 +236,7 @@
     <section class="hero">
         <div class="hero-content">
             <div class="hero-image">
-                <img src="{{ asset($pageContent && $pageContent->hero_image ? (str_starts_with($pageContent->hero_image, 'images/') ? $pageContent->hero_image : 'storage/' . $pageContent->hero_image) : 'images/img2.jpg') }}" alt="{{ $pageContent->hero_title ?? 'Frederic N\'DA' }}">
+                <img src="{{ asset('images/' . ($pageContent->hero_image ?? 'img2.jpg')) }}" alt="{{ $pageContent->hero_title ?? 'Frederic N\'DA' }}">
             </div>
             <div class="hero-text">
                 <h1>{{ $pageContent->hero_title ?? 'Frederic N\'DA' }}</h1>
@@ -253,14 +253,13 @@
         </div>
 
         <div class="category-cards">
-            @foreach($categories as $category)
+            @foreach($categories->where('slug', '!=', 'gallery') as $category)
             @php
                 // Mapper les slugs de catégories aux noms de routes
                 $routeName = match($category->slug) {
                     'peinture' => 'peinture',
                     'design' => 'design',
                     'marque' => 'marques',
-                    'gallery' => 'gallery',
                     default => $category->slug
                 };
             @endphp
@@ -272,6 +271,15 @@
                 </div>
             </a>
             @endforeach
+            
+            {{-- Carte Gallery (page indépendante, pas une catégorie de produits) --}}
+            <a href="{{ route('gallery') }}" class="category-card">
+                <img src="{{ asset($galleryContent && $galleryContent->gallery_image ? 'storage/' . $galleryContent->gallery_image : 'images/img1.jpg') }}" alt="{{ $galleryContent->gallery_name ?? 'Gallery' }}">
+                <div class="category-overlay">
+                    <h2>{{ $galleryContent->gallery_name ?? 'Gallery' }}</h2>
+                    <p class="category-desc">{{ $galleryContent->gallery_description ?? 'NÈGRE Workshop - Espace créatif' }}</p>
+                </div>
+            </a>
         </div>
     </section>
 @endsection

@@ -18,6 +18,7 @@ class Order extends Model
         'product_name',
         'product_price',
         'status',
+        'order_channel',
         'admin_notes',
     ];
 

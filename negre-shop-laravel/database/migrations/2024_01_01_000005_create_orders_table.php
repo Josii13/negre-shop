@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('product_name')->nullable(); // Sauvegarde le nom au cas où le produit est supprimé
             $table->decimal('product_price', 10, 2)->nullable();
             $table->enum('status', ['pending', 'confirmed', 'processing', 'completed', 'cancelled'])->default('pending');
+            $table->enum('order_channel', ['app', 'whatsapp'])->default('app')->comment('Canal: app (formulaire) ou whatsapp (redirigé)');
             $table->text('admin_notes')->nullable();
             $table->timestamps();
         });

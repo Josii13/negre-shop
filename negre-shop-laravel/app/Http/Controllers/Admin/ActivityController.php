@@ -25,12 +25,25 @@ class ActivityController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'date' => 'required|date',
-            'location' => 'nullable|string|max:255',
+            'type' => 'required|string|max:255',
+            'price' => 'nullable|string|max:255',
+            'frequency' => 'nullable|string|max:255',
+            'capacity' => 'nullable|string|max:255',
+            'audience' => 'nullable|string|max:255',
+            'tab' => 'required|in:atelier,activites,evenements,podcasts',
+            'order' => 'nullable|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5000',
-            'type' => 'required|in:atelier,activite,evenement,podcast',
         ]);
 
+        // Gérer le statut actif/inactif
+        $validated['is_active'] = $request->has('is_active');
+
+        // Gérer l'ordre par défaut
+        if (!isset($validated['order'])) {
+            $validated['order'] = 0;
+        }
+
+        // Gérer l'upload de l'image
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('activities', 'public');
         }
@@ -50,13 +63,22 @@ class ActivityController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'date' => 'required|date',
-            'location' => 'nullable|string|max:255',
+            'type' => 'required|string|max:255',
+            'price' => 'nullable|string|max:255',
+            'frequency' => 'nullable|string|max:255',
+            'capacity' => 'nullable|string|max:255',
+            'audience' => 'nullable|string|max:255',
+            'tab' => 'required|in:atelier,activites,evenements,podcasts',
+            'order' => 'nullable|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5000',
-            'type' => 'required|in:atelier,activite,evenement,podcast',
         ]);
 
+        // Gérer le statut actif/inactif
+        $validated['is_active'] = $request->has('is_active');
+
+        // Gérer l'upload de la nouvelle image
         if ($request->hasFile('image')) {
+            // Supprimer l'ancienne image si elle existe
             if ($activity->image) {
                 Storage::disk('public')->delete($activity->image);
             }
@@ -70,6 +92,7 @@ class ActivityController extends Controller
 
     public function destroy(Activity $activity)
     {
+        // Supprimer l'image si elle existe
         if ($activity->image) {
             Storage::disk('public')->delete($activity->image);
         }
@@ -79,4 +102,3 @@ class ActivityController extends Controller
         return redirect()->route('admin.activities.index')->with('success', 'Activité supprimée avec succès !');
     }
 }
-

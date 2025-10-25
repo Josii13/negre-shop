@@ -29,10 +29,16 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|unique:categories,slug',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         if (!$request->slug) {
             $validated['slug'] = Str::slug($request->name);
+        }
+
+        // Gérer l'upload de l'image
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('categories', 'public');
         }
 
         Category::create($validated);
@@ -51,10 +57,29 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|unique:categories,slug,' . $category->id,
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         if (!$request->slug) {
             $validated['slug'] = Str::slug($request->name);
+        }
+
+        // Gérer la suppression de l'image si demandée
+        if ($request->has('remove_image') && $request->remove_image == '1') {
+            if ($category->image) {
+                Storage::disk('public')->delete($category->image);
+                $validated['image'] = null;
+            }
+        }
+        // Gérer l'upload de la nouvelle image
+        elseif ($request->hasFile('image')) {
+            // Supprimer l'ancienne image si elle existe
+            if ($category->image) {
+                Storage::disk('public')->delete($category->image);
+            }
+            
+            // Stocker la nouvelle image dans storage/app/public/categories
+            $validated['image'] = $request->file('image')->store('categories', 'public');
         }
 
         $category->update($validated);
@@ -91,6 +116,11 @@ class CategoryController extends Controller
 
             // Supprimer tous les produits de cette catégorie
             $category->products()->delete();
+        }
+
+        // Supprimer l'image de la catégorie si elle existe
+        if ($category->image) {
+            Storage::disk('public')->delete($category->image);
         }
 
         // Supprimer la catégorie

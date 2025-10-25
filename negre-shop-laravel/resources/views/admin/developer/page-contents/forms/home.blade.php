@@ -1,10 +1,56 @@
 {{-- Hero Section (Image + Texte en dessous du carousel) --}}
 <h5 class="text-primary">Section Hero (Image + Biographie)</h5>
+
 <div class="form-group">
-    <label for="hero_image">Image Hero</label>
-    <input type="text" class="form-control" id="hero_image" name="hero_image" value="{{ $content->hero_image ?? 'img2.jpg' }}">
-    <small class="form-text text-muted">Nom du fichier dans public/images/ (ex: img2.jpg)</small>
+    <label for="hero_image_file">Image Hero</label>
+    
+    {{-- Prévisualisation de l'image actuelle --}}
+    @if(isset($content->hero_image) && $content->hero_image)
+    <div class="mb-3">
+        <img id="hero_image_preview" 
+             src="{{ asset(str_starts_with($content->hero_image, 'images/') ? $content->hero_image : 'images/' . $content->hero_image) }}" 
+             alt="Hero Image" 
+             class="img-thumbnail" 
+             style="max-height: 200px; object-fit: cover;">
+    </div>
+    @else
+    <div class="mb-3">
+        <img id="hero_image_preview" 
+             src="{{ asset('images/img2.jpg') }}" 
+             alt="Hero Image" 
+             class="img-thumbnail" 
+             style="max-height: 200px; object-fit: cover;">
+    </div>
+    @endif
+    
+    {{-- Champ d'upload --}}
+    <div class="custom-file">
+        <input type="file" class="custom-file-input" id="hero_image_file" name="hero_image_file" accept="image/*" onchange="previewHeroImage(event)">
+        <label class="custom-file-label" for="hero_image_file">Choisir une nouvelle image...</label>
+    </div>
+    <small class="form-text text-muted">Format accepté : JPG, PNG, GIF, WEBP (max 2MB)</small>
+    
+    {{-- Champ caché pour conserver l'ancienne valeur --}}
+    <input type="hidden" name="hero_image_current" value="{{ $content->hero_image ?? 'img2.jpg' }}">
 </div>
+
+<script>
+function previewHeroImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('hero_image_preview').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+        
+        // Mettre à jour le label avec le nom du fichier
+        const fileName = file.name;
+        const label = event.target.nextElementSibling;
+        label.textContent = fileName;
+    }
+}
+</script>
 <div class="form-group">
     <label for="hero_title">Titre Principal</label>
     <input type="text" class="form-control" id="hero_title" name="hero_title" value="{{ $content->hero_title ?? 'Frederic N\'DA' }}" required>

@@ -36,9 +36,40 @@
                 <textarea id="message" name="message" readonly></textarea>
             </div>
             
-            <button type="submit" class="submit-btn" id="submitBtn">
-                {{ $modalContent->order_button_submit ?? 'Envoyer' }}
-            </button>
+            <input type="hidden" id="order_channel" name="order_channel" value="app">
+            
+            <div class="form-actions">
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-paper-plane"></i> {{ $modalContent->order_button_submit ?? 'Commander via Email' }}
+                </button>
+                <button type="button" class="submit-btn whatsapp-btn" id="submitWhatsAppBtn" onclick="submitOrderViaWhatsApp()">
+                    <i class="fab fa-whatsapp"></i> Continuer sur WhatsApp
+                </button>
+            </div>
         </form>
     </div>
 </div>
+
+<style>
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.form-actions .submit-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.form-actions .whatsapp-btn {
+    background: #25D366;
+}
+
+.form-actions .whatsapp-btn:hover {
+    background: #128C7E;
+}
+</style>

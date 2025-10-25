@@ -24,7 +24,8 @@
                         <th>Image</th>
                         <th>Titre</th>
                         <th>Type</th>
-                        <th>Catégorie</th>
+                        <th>Onglet</th>
+                        <th>Statut</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -42,7 +43,36 @@
                             <td>
                                 <span class="badge badge-info">{{ $activity->type }}</span>
                             </td>
-                            <td>{{ $activity->category }}</td>
+                            <td>
+                                @php
+                                    $tabLabels = [
+                                        'atelier' => 'L\'Atelier',
+                                        'activites' => 'Activités',
+                                        'evenements' => 'Événements',
+                                        'podcasts' => 'Podcasts'
+                                    ];
+                                    $tabColors = [
+                                        'atelier' => 'primary',
+                                        'activites' => 'success',
+                                        'evenements' => 'warning',
+                                        'podcasts' => 'secondary'
+                                    ];
+                                @endphp
+                                <span class="badge badge-{{ $tabColors[$activity->tab] ?? 'secondary' }}">
+                                    {{ $tabLabels[$activity->tab] ?? $activity->tab }}
+                                </span>
+                            </td>
+                            <td>
+                                @if($activity->is_active)
+                                    <span class="badge badge-success">
+                                        <i class="fas fa-check-circle"></i> Actif
+                                    </span>
+                                @else
+                                    <span class="badge badge-danger">
+                                        <i class="fas fa-times-circle"></i> Inactif
+                                    </span>
+                                @endif
+                            </td>
                             <td>
                                 <a href="{{ route('admin.activities.edit', $activity) }}" class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i>
@@ -58,7 +88,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center">Aucune activité trouvée</td>
+                            <td colspan="6" class="text-center">Aucune activité trouvée</td>
                         </tr>
                     @endforelse
                 </tbody>

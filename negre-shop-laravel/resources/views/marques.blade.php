@@ -283,7 +283,7 @@
             @forelse($products as $product)
             <div class="product-card">
                 <div class="product-image">
-                    <img src="{{ asset($product->image ? 'storage/' . $product->image : 'storage/images/img1.jpg') }}" alt="{{ $product->name }}">
+                    <img src="{{ asset($product->image ? 'storage/' . $product->image : 'images/img1.jpg') }}" alt="{{ $product->name }}">
                     <div class="view-eye" onclick="openDetailModal({{ $loop->index }})">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -343,6 +343,9 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal de commande --}}
+    @include('partials.modals.order-modal', ['modalId' => 'orderModal', 'formId' => 'orderForm'])
 @endsection
 
 @section('scripts')
@@ -351,12 +354,117 @@ document.addEventListener('DOMContentLoaded', function() {
     const products = @json($products);
     const whatsappNumber = "{{ $whatsappNumber ?? '2250769465904' }}"; // Numéro WhatsApp depuis .env
     
+    // Gérer la soumission du formulaire de commande via AJAX
+    const orderForm = document.getElementById('orderForm');
+    if (orderForm) {
+        orderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = document.getElementById('submitBtn');
+            const whatsappBtn = document.getElementById('submitWhatsAppBtn');
+            
+            // Désactiver les boutons pendant l'envoi
+            submitBtn.disabled = true;
+            whatsappBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+            
+            // Envoyer la commande
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Fermer la modal
+                    closeOrderModal();
+                    
+                    // Si la commande est via WhatsApp, rediriger
+                    if (data.redirect_to_whatsapp && data.whatsapp_url) {
+                        // Copier le message dans le presse-papier
+                        if (data.message_text && navigator.clipboard) {
+                            navigator.clipboard.writeText(data.message_text).catch(() => {});
+                        }
+                        
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Redirection vers WhatsApp',
+                            html: `
+                                <p><strong>Commande enregistrée avec succès !</strong></p>
+                                <p style="margin-top: 1rem; font-size: 0.9em; color: #666;">
+                                    <i class="fas fa-info-circle"></i> Le message a été copié automatiquement.<br>
+                                    Si le texte n'apparaît pas dans WhatsApp, <strong>collez-le manuellement</strong> (Ctrl+V).
+                                </p>
+                            `,
+                            confirmButtonText: 'Ouvrir WhatsApp',
+                            confirmButtonColor: '#25D366',
+                            showCancelButton: true,
+                            cancelButtonText: 'Copier le message',
+                            cancelButtonColor: '#6c757d'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.open(data.whatsapp_url, '_blank');
+                            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                                // Recopier le message
+                                if (data.message_text) {
+                                    navigator.clipboard.writeText(data.message_text).then(() => {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Message copié !',
+                                            text: 'Collez-le dans WhatsApp (Ctrl+V)',
+                                            timer: 2000,
+                                            showConfirmButton: false
+                                        });
+                                    });
+                                }
+                            }
+                        });
+                    } else {
+                        // Sinon, afficher le message de succès normal
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Commande envoyée !',
+                            text: data.message,
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#000'
+                        });
+                    }
+                    
+                    // Réinitialiser le formulaire
+                    orderForm.reset();
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur !',
+                    text: 'Une erreur est survenue lors de l\'envoi de la commande.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#e74a3b'
+                });
+            })
+            .finally(() => {
+                // Réactiver les boutons
+                submitBtn.disabled = false;
+                whatsappBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> {{ $modalContent->order_button_submit ?? "Commander via Email" }}';
+            });
+        });
+    }
+    
     // Variable pour stocker le produit actuel
     let currentProductMarque = null;
 
     window.openDetailModal = function(index) {
         currentProductMarque = products[index];
-        document.getElementById('detailImage').src = '/images/' + (currentProductMarque.image || 'img1.jpg');
+        const imagePath = currentProductMarque.image ? '/storage/' + currentProductMarque.image : '/images/img1.jpg';
+        document.getElementById('detailImage').src = imagePath;
         document.getElementById('detailTitle').textContent = currentProductMarque.name;
         document.getElementById('detailPrice').textContent = currentProductMarque.formatted_price || '';
         document.getElementById('detailDescription').textContent = currentProductMarque.description || '';
@@ -375,18 +483,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.orderFromDetail = function() {
         closeDetailModal();
-        orderOnWhatsAppWithProduct(currentProductMarque);
+        openOrderModal(currentProductMarque);
     }
+
+    // Variable globale pour stocker le produit courant
+    let currentOrderProduct = null;
 
     window.orderOnWhatsApp = function(index) {
-        orderOnWhatsAppWithProduct(products[index]);
+        openOrderModal(products[index]);
     }
 
-    function orderOnWhatsAppWithProduct(product) {
+    function openOrderModal(product) {
+        currentOrderProduct = product;
         const message = `Bonjour, je souhaite commander le produit suivant :\n\n*${product.name}*\nPrix : ${product.formatted_price || product.price + ' FCFA'}\n\nMerci de me recontacter pour finaliser la commande.`;
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-        window.open(whatsappUrl, '_blank');
+        
+        // Remplir la modal de commande
+        document.getElementById('product_id').value = product.id;
+        document.getElementById('message').value = message;
+        
+        // Afficher la modal
+        document.getElementById('orderModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Fonction appelée quand l'utilisateur clique sur "Continuer sur WhatsApp"
+    window.submitOrderViaWhatsApp = function() {
+        const form = document.getElementById('orderForm');
+        
+        // Valider le formulaire
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        
+        // Changer le canal de commande à "whatsapp"
+        document.getElementById('order_channel').value = 'whatsapp';
+        
+        // Soumettre le formulaire (cela va enregistrer la commande en BDD avec order_channel='whatsapp')
+        // Puis dans la réponse (success callback), on redirigera vers WhatsApp
+        form.submit();
+    }
+
+    window.closeOrderModal = function() {
+        document.getElementById('orderModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    window.orderFromDetail = function() {
+        if (currentProductMarque) {
+            openOrderModal(currentProductMarque);
+        }
     }
 
     document.getElementById('detailModal').addEventListener('click', function(e) {

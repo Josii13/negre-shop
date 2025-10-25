@@ -20,7 +20,7 @@ class OrderController extends Controller
         $product = Product::findOrFail($validated['product_id']);
 
         // Créer la commande
-        Order::create([
+        $order = Order::create([
             'product_id' => $validated['product_id'],
             'customer_name' => $validated['customer_name'],
             'customer_email' => $validated['customer_email'],
@@ -29,6 +29,7 @@ class OrderController extends Controller
             'product_name' => $product->name,
             'product_price' => $product->price,
             'status' => 'pending',
+            'order_channel' => $validated['order_channel'] ?? 'app',
         ]);
 
         // Créer ou mettre à jour l'utilisateur
@@ -43,12 +44,25 @@ class OrderController extends Controller
 
         // Retourner une réponse JSON pour les requêtes AJAX
         if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
+            $response = [
                 'success' => true,
                 'message' => 'Merci pour votre commande ! Nous vous contacterons bientôt.',
                 'product_name' => $product->name,
                 'product_price' => $product->formatted_price ?? $product->price . ' FCFA',
-            ]);
+            ];
+            
+            // Si la commande est via WhatsApp, générer l'URL de redirection
+            if ($order->order_channel === 'whatsapp') {
+                $whatsappNumber = config('services.whatsapp.number', '2250769465904');
+                $message = "Bonjour, je souhaite commander le produit suivant :\n\n*{$product->name}*\nPrix : " . ($product->formatted_price ?? $product->price . ' FCFA') . "\n\nNom: {$order->customer_name}\nEmail: {$order->customer_email}\nTéléphone: {$order->customer_phone}\n\nMerci de me recontacter pour finaliser la commande.";
+                $encodedMessage = urlencode($message);
+                // Utiliser web.whatsapp.com qui fonctionne mieux avec les messages pré-remplis
+                $response['whatsapp_url'] = "https://web.whatsapp.com/send?phone={$whatsappNumber}&text={$encodedMessage}";
+                $response['redirect_to_whatsapp'] = true;
+                $response['message_text'] = $message; // Pour copie manuelle si besoin
+            }
+            
+            return response()->json($response);
         }
 
         return back()->with('success', 'Merci pour votre commande ! Nous vous contacterons bientôt.');

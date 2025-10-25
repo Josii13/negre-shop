@@ -17,7 +17,7 @@
         <h6 class="m-0 font-weight-bold text-primary">Informations de la Catégorie</h6>
     </div>
     <div class="card-body">
-        <form id="createCategoryForm" action="{{ route('admin.categories.store') }}" method="POST">
+        <form id="createCategoryForm" action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <div class="row">
@@ -57,6 +57,33 @@
 
             <hr>
 
+            {{-- Image de la catégorie --}}
+            <h5 class="text-primary mb-3">Image de la Catégorie</h5>
+            
+            <div class="form-group">
+                <label for="image_file">Image de la catégorie</label>
+                
+                {{-- Prévisualisation de l'image --}}
+                <div class="mb-3">
+                    <div id="category_image_preview_placeholder" class="alert alert-info">
+                        <i class="fas fa-image"></i> Aucune image sélectionnée
+                    </div>
+                </div>
+                
+                {{-- Champ d'upload --}}
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input @error('image') is-invalid @enderror" 
+                           id="image_file" name="image" accept="image/*" onchange="previewCategoryImage(event)">
+                    <label class="custom-file-label" for="image_file">Choisir une image...</label>
+                    @error('image')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+                <small class="form-text text-muted">Format accepté : JPG, PNG, GIF, WEBP (max 2MB). Cette image sera affichée sur la page d'accueil.</small>
+            </div>
+
+            <hr>
+
             <div class="form-group mb-0">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Enregistrer
@@ -72,6 +99,37 @@
 
 @section('scripts')
 <script>
+// Fonction de prévisualisation de l'image
+function previewCategoryImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Vérifier si l'élément preview existe
+            let previewImg = document.getElementById('category_image_preview');
+            const placeholder = document.getElementById('category_image_preview_placeholder');
+            
+            if (!previewImg) {
+                // Créer l'élément img si il n'existe pas
+                if (placeholder) {
+                    placeholder.parentElement.innerHTML = '<img id="category_image_preview" src="" alt="Category Image" class="img-thumbnail" style="max-height: 200px; object-fit: cover;">';
+                    previewImg = document.getElementById('category_image_preview');
+                }
+            }
+            
+            if (previewImg) {
+                previewImg.src = e.target.result;
+            }
+        }
+        reader.readAsDataURL(file);
+        
+        // Mettre à jour le label avec le nom du fichier
+        const fileName = file.name;
+        const label = event.target.nextElementSibling;
+        label.textContent = fileName;
+    }
+}
+
 $(document).ready(function() {
     // Modale de chargement lors de la soumission du formulaire
     $('#createCategoryForm').on('submit', function(e) {

@@ -9,10 +9,67 @@
     <textarea class="form-control" id="banner_description" name="banner_description" rows="3">{{ $content->banner_description ?? '' }}</textarea>
 </div>
 <div class="form-group">
-    <label for="banner_background">Image de fond (URL ou chemin)</label>
-    <input type="text" class="form-control" id="banner_background" name="banner_background" value="{{ $content->banner_background ?? '' }}">
-    <small class="form-text text-muted">URL de l'image ou chemin dans public/images/</small>
+    <label for="banner_background_file">Image de fond de la Bannière</label>
+    
+    {{-- Prévisualisation de l'image actuelle --}}
+    @if(isset($content->banner_background) && $content->banner_background)
+    <div class="mb-3">
+        <img id="banner_background_preview" 
+             src="{{ asset('images/' . $content->banner_background) }}" 
+             alt="Banner Background" 
+             class="img-thumbnail" 
+             style="max-height: 200px; object-fit: cover;">
+    </div>
+    @else
+    <div class="mb-3">
+        <div id="banner_background_preview_placeholder" class="alert alert-info">
+            <i class="fas fa-image"></i> Aucune image de fond définie
+        </div>
+    </div>
+    @endif
+    
+    {{-- Champ d'upload --}}
+    <div class="custom-file">
+        <input type="file" class="custom-file-input" id="banner_background_file" name="banner_background_file" accept="image/*" onchange="previewBannerBackgroundDesign(event)">
+        <label class="custom-file-label" for="banner_background_file">Choisir une image de fond...</label>
+    </div>
+    <small class="form-text text-muted">Format accepté : JPG, PNG, GIF, WEBP (max 2MB). Cette image sera utilisée en arrière-plan de la bannière.</small>
+    
+    {{-- Champ caché pour conserver l'ancienne valeur --}}
+    <input type="hidden" name="banner_background_current" value="{{ $content->banner_background ?? '' }}">
 </div>
+
+<script>
+function previewBannerBackgroundDesign(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Vérifier si l'élément preview existe
+            let previewImg = document.getElementById('banner_background_preview');
+            const placeholder = document.getElementById('banner_background_preview_placeholder');
+            
+            if (!previewImg) {
+                // Créer l'élément img si il n'existe pas
+                if (placeholder) {
+                    placeholder.parentElement.innerHTML = '<img id="banner_background_preview" src="" alt="Banner Background" class="img-thumbnail" style="max-height: 200px; object-fit: cover;">';
+                    previewImg = document.getElementById('banner_background_preview');
+                }
+            }
+            
+            if (previewImg) {
+                previewImg.src = e.target.result;
+            }
+        }
+        reader.readAsDataURL(file);
+        
+        // Mettre à jour le label avec le nom du fichier
+        const fileName = file.name;
+        const label = event.target.nextElementSibling;
+        label.textContent = fileName;
+    }
+}
+</script>
 
 <hr class="my-4">
 

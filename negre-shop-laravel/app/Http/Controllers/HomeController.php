@@ -6,6 +6,7 @@ use App\Models\CarouselSlide;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\PageHomeContent;
+use App\Models\PageGalleryContent;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -26,8 +27,11 @@ class HomeController extends Controller
 
         // Récupérer le contenu dynamique de la page
         $pageContent = PageHomeContent::first();
+        
+        // Récupérer le contenu de la carte Gallery
+        $galleryContent = PageGalleryContent::first();
 
-        return view('home', compact('slides', 'categories', 'featuredProducts', 'pageContent'));
+        return view('home', compact('slides', 'categories', 'featuredProducts', 'pageContent', 'galleryContent'));
     }
 }
 

@@ -32,15 +32,7 @@ class CategorySeeder extends Seeder
                 'is_active' => true,
             ],
             // Note: La catégorie Marque est gérée par MarqueCategorySeeder
-            [
-                'name' => 'Gallery',
-                'slug' => 'gallery',
-                'description' => 'NÈGRE Workshop - Espace créatif',
-                'banner_title' => 'NÈGRE Workshop Gallery',
-                'banner_description' => 'Un espace inspirant dédié à la création artistique, aux événements et aux échanges culturels.',
-                'order' => 3,
-                'is_active' => true,
-            ],
+            // Note: Gallery n'est PAS une catégorie de produits. Elle est gérée par PageGalleryContent (page d'activités/workshop)
         ];
 
         foreach ($categories as $category) {

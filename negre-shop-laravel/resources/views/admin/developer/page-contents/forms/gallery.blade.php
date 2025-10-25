@@ -1,3 +1,70 @@
+{{-- Informations de Gallery Section --}}
+<div class="card mb-4 border-info">
+    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-info-circle"></i> Informations de Gallery (Page d'accueil)</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">Ces informations sont affichées sur la page d'accueil dans la carte Gallery</p>
+        
+        <div class="form-group">
+            <label for="gallery_name">Nom de la section</label>
+            <input type="text" class="form-control" id="gallery_name" name="gallery_name" value="{{ $content->gallery_name ?? 'Gallery' }}">
+            <small class="form-text text-muted">Le nom affiché sur la carte de la page d'accueil</small>
+        </div>
+
+        <div class="form-group">
+            <label for="gallery_description">Description courte</label>
+            <textarea class="form-control" id="gallery_description" name="gallery_description" rows="2">{{ $content->gallery_description ?? 'NÈGRE Workshop - Espace créatif' }}</textarea>
+            <small class="form-text text-muted">La description affichée sur la carte de la page d'accueil</small>
+        </div>
+
+        <div class="form-group">
+            <label for="gallery_image_file">Image de la carte (Page d'accueil)</label>
+            @if(isset($content->gallery_image) && $content->gallery_image)
+            <div class="mb-3">
+                <img id="gallery_image_preview" 
+                     src="{{ asset('storage/' . $content->gallery_image) }}" 
+                     alt="Gallery Card Image" 
+                     class="img-thumbnail" 
+                     style="max-height: 200px; object-fit: cover;">
+            </div>
+            @else
+            <div class="mb-3">
+                <img id="gallery_image_preview" 
+                     src="{{ asset('images/img1.jpg') }}" 
+                     alt="Gallery Card Image" 
+                     class="img-thumbnail" 
+                     style="max-height: 200px; object-fit: cover;">
+            </div>
+            @endif
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="gallery_image_file" name="gallery_image_file" accept="image/*" onchange="previewGalleryImage(event)">
+                <label class="custom-file-label" for="gallery_image_file">Choisir une nouvelle image...</label>
+            </div>
+            <small class="form-text text-muted">Format accepté : JPG, PNG, GIF, WEBP (max 2MB). Cette image sera affichée sur la carte Gallery de la page d'accueil.</small>
+            <input type="hidden" name="gallery_image_current" value="{{ $content->gallery_image ?? '' }}">
+        </div>
+    </div>
+</div>
+
+<script>
+function previewGalleryImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('gallery_image_preview').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+        const fileName = file.name;
+        const label = event.target.nextElementSibling;
+        label.textContent = fileName;
+    }
+}
+</script>
+
+<hr class="my-4">
+
 {{-- Banner Section --}}
 <h5 class="text-primary">Section Bannière</h5>
 <div class="form-group">
@@ -18,9 +85,47 @@
     <small class="form-text text-muted">Texte descriptif de l'atelier</small>
 </div>
 <div class="form-group">
-    <label for="banner_background">Image de fond (URL ou chemin)</label>
-    <input type="text" class="form-control" id="banner_background" name="banner_background" value="{{ $content->banner_background ?? '' }}">
+    <label for="banner_background_file">Image de fond de la bannière</label>
+    @if(isset($content->banner_background) && $content->banner_background)
+    <div class="mb-3">
+        <img id="banner_background_preview" 
+             src="{{ asset('images/' . $content->banner_background) }}" 
+             alt="Banner Background" 
+             class="img-thumbnail" 
+             style="max-height: 200px; object-fit: cover;">
+    </div>
+    @else
+    <div class="mb-3">
+        <img id="banner_background_preview" 
+             src="{{ asset('images/img1.jpg') }}" 
+             alt="Banner Background" 
+             class="img-thumbnail" 
+             style="max-height: 200px; object-fit: cover;">
+    </div>
+    @endif
+    <div class="custom-file">
+        <input type="file" class="custom-file-input" id="banner_background_file" name="banner_background_file" accept="image/*" onchange="previewBannerBackground(event)">
+        <label class="custom-file-label" for="banner_background_file">Choisir une nouvelle image...</label>
+    </div>
+    <small class="form-text text-muted">Format accepté : JPG, PNG, GIF, WEBP (max 2MB). Cette image sera affichée en arrière-plan de la bannière.</small>
+    <input type="hidden" name="banner_background_current" value="{{ $content->banner_background ?? '' }}">
 </div>
+
+<script>
+function previewBannerBackground(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('banner_background_preview').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+        const fileName = file.name;
+        const label = event.target.nextElementSibling;
+        label.textContent = fileName;
+    }
+}
+</script>
 
 <hr class="my-4">
 

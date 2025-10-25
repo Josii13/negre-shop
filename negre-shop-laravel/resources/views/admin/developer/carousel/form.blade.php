@@ -22,23 +22,6 @@
     @enderror
 </div>
 
-<div class="form-row">
-    <div class="form-group col-md-6">
-        <label for="button_text">Texte du Bouton</label>
-        <input type="text" class="form-control @error('button_text') is-invalid @enderror" id="button_text" name="button_text" value="{{ old('button_text', $carousel->button_text ?? '') }}">
-        @error('button_text')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-    <div class="form-group col-md-6">
-        <label for="button_link">Lien du Bouton</label>
-        <input type="text" class="form-control @error('button_link') is-invalid @enderror" id="button_link" name="button_link" value="{{ old('button_link', $carousel->button_link ?? '') }}">
-        @error('button_link')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-</div>
-
 <div class="form-group">
     <label for="image">Image{{ isset($carousel) ? '' : ' *' }}</label>
     @if(isset($carousel) && $carousel->image)

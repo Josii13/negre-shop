@@ -27,6 +27,7 @@ class StoreOrderRequest extends FormRequest
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'required|string|max:20',
             'message' => 'nullable|string|max:1000',
+            'order_channel' => 'nullable|in:app,whatsapp',
         ];
     }
 

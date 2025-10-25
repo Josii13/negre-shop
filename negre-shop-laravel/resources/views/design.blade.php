@@ -324,7 +324,7 @@
 
 @section('content')
     <!-- Page Banner -->
-    <section class="page-banner">
+    <section class="page-banner" @if($pageContent && $pageContent->banner_background) style="background-image: linear-gradient(135deg, rgba(250, 250, 250, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%), url('{{ asset('images/' . $pageContent->banner_background) }}'); background-size: cover; background-position: center;" @endif>
         <div class="banner-content">
             <h1>{{ $pageContent->banner_title ?? $category->name }}</h1>
             <p>{{ $pageContent->banner_description ?? $category->description }}</p>
