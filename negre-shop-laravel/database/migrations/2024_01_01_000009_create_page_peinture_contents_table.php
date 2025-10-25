@@ -26,6 +26,26 @@ return new class extends Migration
             $table->string('grid_title')->default('Mes Œuvres');
             $table->text('grid_subtitle')->nullable();
             
+            // Product Card Buttons
+            $table->string('product_button_order')->default('Commander');
+            
+            // Modal Detail
+            $table->string('detail_button_order')->default('Commander cette œuvre');
+            $table->string('detail_characteristics_title')->default('Caractéristiques');
+            $table->string('detail_label_dimensions')->default('Dimensions');
+            $table->string('detail_label_technique')->default('Technique');
+            $table->string('detail_label_support')->default('Support');
+            $table->string('detail_label_year')->default('Année');
+            
+            // Modal Order
+            $table->string('order_title')->default('Commander');
+            $table->string('order_label_name')->default('Nom');
+            $table->string('order_label_email')->default('Email');
+            $table->string('order_label_phone')->default('Téléphone');
+            $table->string('order_label_message')->default('Message');
+            $table->string('order_button_submit')->default('Commander via Email');
+            $table->string('order_button_whatsapp')->default('Continuer sur WhatsApp');
+            
             // Meta SEO
             $table->string('meta_title')->nullable();
             $table->text('meta_description')->nullable();

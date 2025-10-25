@@ -273,7 +273,7 @@
                         <h3>{{ $product->name }}</h3>
                         <span class="product-price"></span>
                     </div>
-                    <button class="product-btn" onclick="openOrderModal({{ $loop->index }})">Commander</button>
+                    <button class="product-btn" onclick="openOrderModal({{ $loop->index }})">{{ $pageContent->product_button_order ?? 'Commander' }}</button>
                 </div>
             </div>
             @empty
@@ -290,10 +290,10 @@
         'priceId' => 'detailPrice',
         'descriptionId' => 'detailDescription',
         'characteristics' => [
-            ['label' => 'Dimensions', 'id' => 'detailDimensions'],
-            ['label' => 'Technique', 'id' => 'detailTechnique'],
-            ['label' => 'Support', 'id' => 'detailSupport'],
-            ['label' => 'Année', 'id' => 'detailYear']
+            ['label' => $pageContent->detail_label_dimensions ?? 'Dimensions', 'id' => 'detailDimensions'],
+            ['label' => $pageContent->detail_label_technique ?? 'Technique', 'id' => 'detailTechnique'],
+            ['label' => $pageContent->detail_label_support ?? 'Support', 'id' => 'detailSupport'],
+            ['label' => $pageContent->detail_label_year ?? 'Année', 'id' => 'detailYear']
         ]
     ])
 

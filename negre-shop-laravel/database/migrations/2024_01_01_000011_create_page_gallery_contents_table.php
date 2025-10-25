@@ -31,6 +31,17 @@ return new class extends Migration
             $table->string('tab_evenements')->default('Événements');
             $table->string('tab_podcasts')->default('Podcasts');
             
+            // Modal Activity Details
+            $table->string('modal_details_title')->default('Détails');
+            $table->string('modal_label_type')->default('Type');
+            $table->string('modal_label_frequency')->default('Fréquence');
+            $table->string('modal_label_capacity')->default('Capacité');
+            $table->string('modal_label_audience')->default('Public');
+            $table->string('modal_button_whatsapp')->default('Réserver sur WhatsApp');
+            
+            // WhatsApp Message Template
+            $table->text('whatsapp_message_template')->default('Bonjour, je souhaite réserver : {activity_title}');
+            
             // Meta SEO
             $table->string('meta_title')->nullable();
             $table->text('meta_description')->nullable();

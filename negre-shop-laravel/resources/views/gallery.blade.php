@@ -585,26 +585,26 @@
                         <p id="modalDescription"></p>
                     </div>
                     <div class="detail-characteristics">
-                        <h4>Détails</h4>
+                        <h4>{{ $pageContent->modal_details_title ?? 'Détails' }}</h4>
                         <div class="characteristic-item">
-                            <span class="characteristic-label">Type</span>
+                            <span class="characteristic-label">{{ $pageContent->modal_label_type ?? 'Type' }}</span>
                             <span class="characteristic-value" id="modalType"></span>
                         </div>
                         <div class="characteristic-item">
-                            <span class="characteristic-label">Fréquence</span>
+                            <span class="characteristic-label">{{ $pageContent->modal_label_frequency ?? 'Fréquence' }}</span>
                             <span class="characteristic-value" id="modalFrequency"></span>
                         </div>
                         <div class="characteristic-item">
-                            <span class="characteristic-label">Capacité</span>
+                            <span class="characteristic-label">{{ $pageContent->modal_label_capacity ?? 'Capacité' }}</span>
                             <span class="characteristic-value" id="modalCapacity"></span>
                         </div>
                         <div class="characteristic-item">
-                            <span class="characteristic-label">Public</span>
+                            <span class="characteristic-label">{{ $pageContent->modal_label_audience ?? 'Public' }}</span>
                             <span class="characteristic-value" id="modalAudience"></span>
                         </div>
                     </div>
                 </div>
-                <a href="#" class="whatsapp-btn" id="modalWhatsapp">Réserver sur WhatsApp</a>
+                <a href="#" class="whatsapp-btn" id="modalWhatsapp">{{ $pageContent->modal_button_whatsapp ?? 'Réserver sur WhatsApp' }}</a>
             </div>
         </div>
     </div>
@@ -619,6 +619,7 @@
         podcasts: @json($podcasts)
     };
     const whatsappNumber = "{{ $whatsappNumber ?? '2250769465904' }}";
+    const whatsappMessageTemplate = @json($pageContent->whatsapp_message_template ?? 'Bonjour, je souhaite réserver : {activity_title}');
     let currentActivity = null;
 
     // Gestion des tabs
@@ -654,7 +655,8 @@
         document.getElementById('modalCapacity').textContent = currentActivity.capacity || 'N/A';
         document.getElementById('modalAudience').textContent = currentActivity.audience || 'N/A';
         
-        const message = `Bonjour, je souhaite réserver : ${currentActivity.title}`;
+        // Utiliser le template WhatsApp dynamique
+        const message = whatsappMessageTemplate.replace('{activity_title}', currentActivity.title);
         const encodedMessage = encodeURIComponent(message);
         // Utiliser wa.me (URL universelle qui s'adapte à l'environnement : mobile app, desktop app, ou web)
         document.getElementById('modalWhatsapp').href = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;

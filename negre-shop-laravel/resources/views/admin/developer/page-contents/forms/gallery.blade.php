@@ -152,6 +152,56 @@ function previewBannerBackground(event) {
 
 <hr class="my-4">
 
+{{-- Activity Modal Section --}}
+<h5 class="text-primary">Modal de Détails d'Activité</h5>
+<div class="form-row">
+    <div class="form-group col-md-6">
+        <label for="modal_details_title">Titre de la section</label>
+        <input type="text" class="form-control" id="modal_details_title" name="modal_details_title" value="{{ $content->modal_details_title ?? 'Détails' }}">
+    </div>
+    <div class="form-group col-md-6">
+        <label for="modal_button_whatsapp">Texte du bouton WhatsApp</label>
+        <input type="text" class="form-control" id="modal_button_whatsapp" name="modal_button_whatsapp" value="{{ $content->modal_button_whatsapp ?? 'Réserver sur WhatsApp' }}">
+    </div>
+</div>
+
+<h6 class="text-secondary mt-3">Labels des Caractéristiques d'Activité</h6>
+<div class="form-row">
+    <div class="form-group col-md-6">
+        <label for="modal_label_type">Label "Type"</label>
+        <input type="text" class="form-control" id="modal_label_type" name="modal_label_type" value="{{ $content->modal_label_type ?? 'Type' }}">
+    </div>
+    <div class="form-group col-md-6">
+        <label for="modal_label_frequency">Label "Fréquence"</label>
+        <input type="text" class="form-control" id="modal_label_frequency" name="modal_label_frequency" value="{{ $content->modal_label_frequency ?? 'Fréquence' }}">
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group col-md-6">
+        <label for="modal_label_capacity">Label "Capacité"</label>
+        <input type="text" class="form-control" id="modal_label_capacity" name="modal_label_capacity" value="{{ $content->modal_label_capacity ?? 'Capacité' }}">
+    </div>
+    <div class="form-group col-md-6">
+        <label for="modal_label_audience">Label "Public"</label>
+        <input type="text" class="form-control" id="modal_label_audience" name="modal_label_audience" value="{{ $content->modal_label_audience ?? 'Public' }}">
+    </div>
+</div>
+
+<hr class="my-4">
+
+{{-- WhatsApp Configuration --}}
+<h5 class="text-primary">Configuration WhatsApp</h5>
+<div class="form-group">
+    <label for="whatsapp_message_template">Template de Message WhatsApp</label>
+    <textarea class="form-control" id="whatsapp_message_template" name="whatsapp_message_template" rows="3">{{ $content->whatsapp_message_template ?? 'Bonjour, je souhaite réserver : {activity_title}' }}</textarea>
+    <small class="form-text text-muted">
+        Variables disponibles : {activity_title}<br>
+        Exemple : "Bonjour, je souhaite réserver : {activity_title}"
+    </small>
+</div>
+
+<hr class="my-4">
+
 {{-- SEO Section --}}
 <h5 class="text-primary">SEO Meta Tags</h5>
 <div class="form-group">

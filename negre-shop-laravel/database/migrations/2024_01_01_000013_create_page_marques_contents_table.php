@@ -25,6 +25,26 @@ return new class extends Migration
             $table->string('grid_title')->default('Nos Produits');
             $table->text('grid_subtitle')->nullable();
             
+            // Product Card Buttons
+            $table->string('product_button_whatsapp')->default('Commander sur WhatsApp');
+            
+            // Modal Detail
+            $table->string('detail_button_whatsapp')->default('Commander sur WhatsApp');
+            $table->string('detail_characteristics_title')->default('Caractéristiques');
+            $table->string('detail_label_material')->default('Matière');
+            $table->string('detail_label_color')->default('Couleur');
+            $table->string('detail_label_brand')->default('Marque');
+            $table->string('detail_label_availability')->default('Disponibilité');
+            
+            // Modal Order
+            $table->string('order_title')->default('Commander');
+            $table->string('order_label_name')->default('Nom');
+            $table->string('order_label_email')->default('Email');
+            $table->string('order_label_phone')->default('Téléphone');
+            $table->string('order_label_message')->default('Message');
+            $table->string('order_button_submit')->default('Commander via Email');
+            $table->string('order_button_whatsapp')->default('Continuer sur WhatsApp');
+            
             // WhatsApp Message Template
             $table->text('whatsapp_message_template')->default('Bonjour, je souhaite commander le produit suivant : {product_name}');
             

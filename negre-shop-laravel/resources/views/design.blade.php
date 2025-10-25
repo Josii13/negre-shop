@@ -350,7 +350,7 @@
                         <h3>{{ $product->name }}</h3>
                         <span class="product-price"></span>
                     </div>
-                    <button class="product-btn" onclick="openOrderModal({{ $loop->index }})">Commander</button>
+                    <button class="product-btn" onclick="openOrderModal({{ $loop->index }})">{{ $pageContent->product_button_order ?? 'Commander' }}</button>
                 </div>
             </div>
             @empty
@@ -359,73 +359,26 @@
         </div>
     </section>
 
-    <!-- Modal de détails -->
-    <div id="detailModal" class="detail-modal">
-        <div class="detail-modal-content">
-            <button class="detail-close" onclick="closeDetailModal()">✕</button>
-            <div class="detail-image-container">
-                <img id="detailImage" src="" alt="">
-            </div>
-            <div class="detail-info-container">
-                <div>
-                    <h2 class="detail-title" id="detailTitle"></h2>
-                    <div class="detail-price" id="detailPrice"></div>
-                    <div class="detail-description">
-                        <p id="detailDescription"></p>
-                    </div>
-                    <div class="detail-characteristics">
-                        <h4>Caractéristiques</h4>
-                        <div class="characteristic-item">
-                            <span class="characteristic-label">Dimensions</span>
-                            <span class="characteristic-value" id="detailDimensions"></span>
-                        </div>
-                        <div class="characteristic-item">
-                            <span class="characteristic-label">Matériaux</span>
-                            <span class="characteristic-value" id="detailMaterials"></span>
-                        </div>
-                        <div class="characteristic-item">
-                            <span class="characteristic-label">Style</span>
-                            <span class="characteristic-value" id="detailStyle"></span>
-                        </div>
-                        <div class="characteristic-item">
-                            <span class="characteristic-label">Année</span>
-                            <span class="characteristic-value" id="detailYear"></span>
-                        </div>
-                    </div>
-                </div>
-                <button class="product-btn" onclick="orderFromDetail()">Commander cette pièce</button>
-            </div>
-        </div>
-    </div>
+    <!-- Modales (utilisation des partials dynamiques) -->
+    @include('partials.modals.detail-modal', [
+        'modalId' => 'detailModal',
+        'imageId' => 'detailImage',
+        'titleId' => 'detailTitle',
+        'priceId' => 'detailPrice',
+        'descriptionId' => 'detailDescription',
+        'characteristics' => [
+            ['label' => $pageContent->detail_label_dimensions ?? 'Dimensions', 'id' => 'detailDimensions'],
+            ['label' => $pageContent->detail_label_materials ?? 'Matériaux', 'id' => 'detailMaterials'],
+            ['label' => $pageContent->detail_label_finish ?? 'Style', 'id' => 'detailStyle'],
+            ['label' => $pageContent->detail_label_year ?? 'Année', 'id' => 'detailYear']
+        ]
+    ])
 
-    <!-- Modal de commande -->
-    <div id="orderModal" class="order-modal">
-        <div class="order-modal-content">
-            <button class="detail-close" onclick="closeOrderModal()">✕</button>
-            <h2>Commander</h2>
-            <form id="orderForm" action="{{ route('order.store') }}" method="POST">
-                @csrf
-                <input type="hidden" id="product_id" name="product_id">
-                <div class="form-group">
-                    <label for="customer_name">Nom</label>
-                    <input type="text" id="customer_name" name="customer_name" required>
-                </div>
-                <div class="form-group">
-                    <label for="customer_email">Email</label>
-                    <input type="email" id="customer_email" name="customer_email" required>
-                </div>
-                <div class="form-group">
-                    <label for="customer_phone">Téléphone</label>
-                    <input type="tel" id="customer_phone" name="customer_phone" required>
-                </div>
-                <div class="form-group">
-                    <label for="message">Message</label>
-                    <textarea id="message" name="message" readonly></textarea>
-                </div>
-                <button type="submit" class="submit-btn" id="submitBtn">Envoyer</button>
-            </form>
-        </div>
-    </div>
+    @include('partials.modals.order-modal', [
+        'modalId' => 'orderModal',
+        'formId' => 'orderForm',
+        'formAction' => route('order.store')
+    ])
 @endsection
 
 @section('scripts')

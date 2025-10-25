@@ -296,7 +296,7 @@
                         <h3>{{ $product->name }}</h3>
                         <span class="product-price"></span>
                     </div>
-                    <button class="product-btn whatsapp-btn" onclick="orderOnWhatsApp({{ $loop->index }})">Commander sur WhatsApp</button>
+                    <button class="product-btn whatsapp-btn" onclick="orderOnWhatsApp({{ $loop->index }})">{{ $pageContent->product_button_whatsapp ?? 'Commander sur WhatsApp' }}</button>
                 </div>
             </div>
             @empty
@@ -305,44 +305,21 @@
         </div>
     </section>
 
-    <!-- Modal de détails -->
-    <div id="detailModal" class="detail-modal">
-        <div class="detail-modal-content">
-            <button class="detail-close" onclick="closeDetailModal()">✕</button>
-            <div class="detail-image-container">
-                <img id="detailImage" src="" alt="">
-            </div>
-            <div class="detail-info-container">
-                <div>
-                    <h2 class="detail-title" id="detailTitle"></h2>
-                    <div class="detail-price" id="detailPrice"></div>
-                    <div class="detail-description">
-                        <p id="detailDescription"></p>
-                    </div>
-                    <div class="detail-characteristics">
-                        <h4>Caractéristiques</h4>
-                        <div class="characteristic-item">
-                            <span class="characteristic-label">Matière</span>
-                            <span class="characteristic-value" id="detailMaterial"></span>
-                        </div>
-                        <div class="characteristic-item">
-                            <span class="characteristic-label">Tailles disponibles</span>
-                            <span class="characteristic-value" id="detailSizes"></span>
-                        </div>
-                        <div class="characteristic-item">
-                            <span class="characteristic-label">Style</span>
-                            <span class="characteristic-value" id="detailStyle"></span>
-                        </div>
-                        <div class="characteristic-item">
-                            <span class="characteristic-label">Collection</span>
-                            <span class="characteristic-value" id="detailCollection"></span>
-                        </div>
-                    </div>
-                </div>
-                <button class="product-btn whatsapp-btn" onclick="orderFromDetail()">Commander sur WhatsApp</button>
-            </div>
-        </div>
-    </div>
+    <!-- Modales (utilisation des partials dynamiques) -->
+    @include('partials.modals.detail-modal', [
+        'modalId' => 'detailModal',
+        'imageId' => 'detailImage',
+        'titleId' => 'detailTitle',
+        'priceId' => 'detailPrice',
+        'descriptionId' => 'detailDescription',
+        'characteristics' => [
+            ['label' => $pageContent->detail_label_material ?? 'Matière', 'id' => 'detailMaterial'],
+            ['label' => $pageContent->detail_label_color ?? 'Tailles disponibles', 'id' => 'detailSizes'],
+            ['label' => $pageContent->detail_label_brand ?? 'Style', 'id' => 'detailStyle'],
+            ['label' => $pageContent->detail_label_availability ?? 'Collection', 'id' => 'detailCollection']
+        ],
+        'buttonAction' => 'orderFromDetail()'
+    ])
 
     {{-- Modal de commande --}}
     @include('partials.modals.order-modal', ['modalId' => 'orderModal', 'formId' => 'orderForm'])
